@@ -1,0 +1,15 @@
+<div class="question-row" [class.selected]="selectable() && selected()">
+  @if (selectable()) {
+    <mat-checkbox [checked]="selected()" (change)="selected.set($event.checked)"></mat-checkbox>
+  }
+
+  <div class="type-icon">
+    <mat-icon>{{ typeIcon() }}</mat-icon>
+  </div>
+
+  <span class="category">{{ question().category }}</span>
+
+  <app-difficulty-badge [difficulty]="question().difficulty" />
+
+  <span class="statement">{{ question().statement }}</span>
+</div>

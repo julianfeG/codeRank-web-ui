@@ -1,0 +1,33 @@
+:host {
+  display: block;
+}
+
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  box-sizing: border-box;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 380px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  margin-top: 8px;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.submit-button {
+  width: 100%;
+  margin-top: 8px;
+}

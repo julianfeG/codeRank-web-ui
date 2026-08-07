@@ -1,0 +1,23 @@
+// mat-chip doesn't ship EASY/MEDIUM/HARD semantic colors, so these are
+// custom — set via the chip's own CSS custom properties (the theming-
+// approved override point) with a plain background-color/color fallback.
+mat-chip.difficulty-easy {
+  --mdc-chip-elevated-container-color: #e3f3e5;
+  --mdc-chip-label-text-color: #1e7e34;
+  background-color: #e3f3e5;
+  color: #1e7e34;
+}
+
+mat-chip.difficulty-medium {
+  --mdc-chip-elevated-container-color: #fdf0da;
+  --mdc-chip-label-text-color: #946200;
+  background-color: #fdf0da;
+  color: #946200;
+}
+
+mat-chip.difficulty-hard {
+  --mdc-chip-elevated-container-color: #fbe4e3;
+  --mdc-chip-label-text-color: #b3261e;
+  background-color: #fbe4e3;
+  color: #b3261e;
+}

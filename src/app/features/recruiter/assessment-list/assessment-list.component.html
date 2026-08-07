@@ -1,0 +1,74 @@
+<ng-template #createButton>
+  <a mat-raised-button color="primary" class="create-button" routerLink="/recruiter/assessments/new">
+    <mat-icon>add</mat-icon>
+    Crear assessment
+  </a>
+</ng-template>
+
+<div class="page">
+  <header class="page-header">
+    <div class="heading">
+      <h1>Assessments</h1>
+      <p class="subtitle">{{ assessments().length }} assessments creados</p>
+    </div>
+    <div class="header-actions">
+      <button mat-button (click)="authService.logout()">
+        <mat-icon>logout</mat-icon>
+        Cerrar sesión
+      </button>
+      <ng-container [ngTemplateOutlet]="createButton" />
+    </div>
+  </header>
+
+  @if (loading()) {
+    <div class="state-container">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (isEmpty()) {
+    <div class="state-container empty-state">
+      <mat-icon class="empty-icon">assignment</mat-icon>
+      <p>Aún no has creado ningún assessment</p>
+      <ng-container [ngTemplateOutlet]="createButton" />
+    </div>
+  } @else {
+    <div class="assessment-list">
+      @for (assessment of assessments(); track assessment.id; let last = $last) {
+        <div class="assessment-row">
+          <div class="row-main">
+            <div class="row-icon">
+              <mat-icon>description</mat-icon>
+            </div>
+            <div class="row-text">
+              <span class="row-title">{{ assessment.title }}</span>
+              <span class="row-meta">
+                {{ assessment.questionCount }} preguntas · creado el
+                {{ assessment.createdAt | date: 'd MMM yyyy' }}
+              </span>
+            </div>
+          </div>
+
+          <div class="row-actions">
+            <button
+              mat-stroked-button
+              class="share-button"
+              aria-label="Copiar link para candidatos"
+              (click)="copyStartLink(assessment)"
+            >
+              <mat-icon>link</mat-icon>
+              <span class="btn-label">Enviar</span>
+            </button>
+            <button mat-stroked-button (click)="openSubmissions(assessment)">
+              <mat-icon>group</mat-icon>
+              Candidatos
+              <span class="count-badge">{{ assessment.submissionCount }}</span>
+            </button>
+          </div>
+        </div>
+
+        @if (!last) {
+          <mat-divider />
+        }
+      }
+    </div>
+  }
+</div>

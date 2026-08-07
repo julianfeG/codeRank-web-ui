@@ -1,0 +1,31 @@
+:host {
+  display: block;
+}
+
+.language-toggle {
+  margin-bottom: 8px;
+}
+
+.editor-container {
+  border: 1px solid var(--mat-sys-outline-variant, rgba(0, 0, 0, 0.24));
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.python-hint {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+app-test-results {
+  display: block;
+  margin-top: 16px;
+}

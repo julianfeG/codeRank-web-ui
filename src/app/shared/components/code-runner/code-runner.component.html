@@ -1,0 +1,44 @@
+<mat-button-toggle-group
+  class="language-toggle"
+  [value]="selectedLanguage()"
+  (change)="selectLanguage($event.value)"
+  aria-label="Lenguaje"
+>
+  @for (lang of allowedLanguages(); track lang) {
+    <mat-button-toggle [value]="lang">{{ languageLabel(lang) }}</mat-button-toggle>
+  }
+</mat-button-toggle-group>
+
+<div class="editor-container" style="height: 300px">
+  <ngx-monaco-editor style="height: 100%" [options]="editorOptions()" [(ngModel)]="code" />
+</div>
+
+@if (selectedLanguage() === 'python') {
+  <p class="python-hint">{{ pythonHint }}</p>
+}
+
+<div class="actions">
+  <button mat-stroked-button [disabled]="saving() || running()" (click)="save()">
+    @if (saving()) {
+      <mat-spinner diameter="18"></mat-spinner>
+    } @else {
+      Guardar
+    }
+  </button>
+
+  <span [matTooltip]="pythonHint" [matTooltipDisabled]="!runDisabled()">
+    <button mat-raised-button color="primary" [disabled]="running() || saving() || runDisabled()" (click)="run()">
+      @if (running()) {
+        <mat-spinner diameter="18"></mat-spinner>
+      } @else {
+        Ejecutar
+      }
+    </button>
+  </span>
+</div>
+
+@if (result(); as r) {
+  @if (r.testResults) {
+    <app-test-results [testResults]="r.testResults" />
+  }
+}

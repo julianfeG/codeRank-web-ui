@@ -1,0 +1,110 @@
+<form [formGroup]="form" (ngSubmit)="submit()" class="question-form">
+  <h2 mat-dialog-title>Nueva pregunta</h2>
+
+  <mat-dialog-content>
+    <mat-radio-group formControlName="type">
+      <mat-radio-button value="MULTIPLE_CHOICE">Opción múltiple</mat-radio-button>
+      <mat-radio-button value="CODE">Código</mat-radio-button>
+    </mat-radio-group>
+
+    <mat-form-field>
+      <mat-label>Categoría</mat-label>
+      <input matInput formControlName="category" />
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Enunciado</mat-label>
+      <textarea matInput formControlName="statement" rows="5"></textarea>
+    </mat-form-field>
+
+    <mat-form-field>
+      <mat-label>Dificultad</mat-label>
+      <mat-select formControlName="difficulty">
+        @for (level of difficulties; track level) {
+          <mat-option [value]="level">{{ level }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    @if (form.controls.type.value === 'MULTIPLE_CHOICE') {
+      <div class="options-section" formArrayName="options">
+        @for (option of optionsArray.controls; track option; let i = $index) {
+          <div class="option-row" [formGroupName]="i">
+            <mat-form-field class="option-text">
+              <mat-label>Opción {{ i + 1 }}</mat-label>
+              <input matInput formControlName="text" />
+            </mat-form-field>
+            <mat-checkbox formControlName="isCorrect">Es correcta</mat-checkbox>
+            <button
+              type="button"
+              mat-icon-button
+              aria-label="Eliminar opción"
+              (click)="removeOption(i)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
+      <button type="button" mat-stroked-button (click)="addOption()">+ Opción</button>
+    }
+
+    @if (form.controls.type.value === 'CODE') {
+      <label class="field-label">Lenguajes permitidos</label>
+      <div class="languages-section" formGroupName="languages">
+        @for (lang of codeLanguages; track lang.code) {
+          <mat-checkbox [formControlName]="lang.code">{{ lang.label }}</mat-checkbox>
+        }
+      </div>
+      @if (form.controls.languages.touched && form.controls.languages.invalid) {
+        <p class="field-error">Marcá al menos un lenguaje.</p>
+      }
+
+      <mat-form-field>
+        <mat-label>Nombre de la función</mat-label>
+        <input matInput formControlName="functionName" />
+        <mat-hint>
+          Nombre exacto de la función que el candidato debe implementar (ej. reverseString). El
+          starter code se genera solo a partir de este nombre — no hace falta escribirlo.
+        </mat-hint>
+        @if (form.controls.functionName.touched && form.controls.functionName.hasError('required')) {
+          <mat-error>El nombre de la función es requerido.</mat-error>
+        }
+      </mat-form-field>
+
+      <label class="field-label">Casos de prueba</label>
+      <div class="test-cases-section" formArrayName="testCases">
+        @for (testCase of testCasesArray.controls; track testCase; let i = $index) {
+          <div class="test-case-row" [formGroupName]="i">
+            <mat-form-field class="test-case-field">
+              <mat-label>Input</mat-label>
+              <input matInput formControlName="input" class="code-field" />
+            </mat-form-field>
+            <mat-form-field class="test-case-field">
+              <mat-label>Output esperado</mat-label>
+              <input matInput formControlName="output" class="code-field" />
+            </mat-form-field>
+            <button
+              type="button"
+              mat-icon-button
+              aria-label="Eliminar caso de prueba"
+              [disabled]="testCasesArray.length <= 1"
+              (click)="removeTestCase(i)"
+            >
+              <mat-icon>delete</mat-icon>
+            </button>
+          </div>
+        }
+      </div>
+      @if (testCasesArray.touched && testCasesArray.invalid) {
+        <p class="field-error">Agregá al menos un caso de prueba.</p>
+      }
+      <button type="button" mat-stroked-button (click)="addTestCase()">+ Agregar caso de prueba</button>
+    }
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button type="button" mat-button (click)="cancel()">Cancelar</button>
+    <button type="submit" mat-raised-button color="primary" [disabled]="saving()">Guardar</button>
+  </mat-dialog-actions>
+</form>

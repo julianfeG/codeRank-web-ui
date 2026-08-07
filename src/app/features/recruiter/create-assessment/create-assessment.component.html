@@ -1,0 +1,37 @@
+<h1>Nuevo Assessment</h1>
+
+<div class="form-panel">
+  <form [formGroup]="form">
+    <mat-form-field class="full-width">
+      <mat-label>Título</mat-label>
+      <input matInput formControlName="title" maxlength="100" />
+    </mat-form-field>
+    <div class="char-counter">{{ form.controls.title.value.length }}/100</div>
+
+    <mat-form-field class="full-width">
+      <mat-label>Descripción (opcional)</mat-label>
+      <textarea matInput formControlName="description" maxlength="500" rows="4"></textarea>
+    </mat-form-field>
+    <div class="char-counter">{{ form.controls.description.value.length }}/500</div>
+  </form>
+</div>
+
+<button mat-stroked-button (click)="openNewQuestionDialog()">+ Nueva pregunta</button>
+
+<div class="question-bank">
+  @for (q of questions(); track q.id) {
+    <app-question-card
+      [question]="q"
+      [selectable]="true"
+      [selected]="selectedIds().has(q.id)"
+      (selectedChange)="toggleSelection(q.id, $event)"
+    />
+  }
+</div>
+
+<div class="summary-bar">
+  <span class="summary-count">{{ selectedIds().size }} preguntas seleccionadas</span>
+  <button mat-raised-button color="primary" [disabled]="!canSubmit() || saving()" (click)="submit()">
+    Crear assessment
+  </button>
+</div>

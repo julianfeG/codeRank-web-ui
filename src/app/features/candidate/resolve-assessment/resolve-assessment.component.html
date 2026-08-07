@@ -1,0 +1,36 @@
+@if (loading()) {
+  <p>Cargando assessment...</p>
+} @else if (assessment(); as a) {
+  <h1>{{ a.title }}</h1>
+
+  @for (aq of orderedQuestions(); track aq.questionId) {
+    <section class="question">
+      <h3>{{ aq.question.category }}</h3>
+      <p>{{ aq.question.statement }}</p>
+
+      @if (aq.question.type === 'MULTIPLE_CHOICE') {
+        <mat-radio-group
+          [value]="mcAnswers()[aq.questionId]"
+          (change)="selectMcOption(aq.questionId, $event.value)"
+        >
+          @for (option of aq.question.options; track option.id) {
+            <mat-radio-button [value]="option.id">{{ option.text }}</mat-radio-button>
+          }
+        </mat-radio-group>
+      }
+
+      @if (aq.question.type === 'CODE') {
+        <app-code-runner
+          [submissionId]="submissionId()"
+          [questionId]="aq.questionId"
+          [allowedLanguages]="aq.question.allowedLanguages"
+          [starterCodeTemplates]="aq.question.starterCodeTemplates"
+        />
+      }
+    </section>
+  }
+
+  <button mat-raised-button color="primary" [disabled]="submitting()" (click)="submitAssessment()">
+    Enviar assessment
+  </button>
+}

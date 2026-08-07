@@ -1,0 +1,58 @@
+@if (loading()) {
+  <p class="loading-message">Cargando...</p>
+} @else if (assessment(); as a) {
+  <div class="start-submission">
+    <div class="icon-square">
+      <mat-icon>code</mat-icon>
+    </div>
+
+    <h1>{{ a.title }}</h1>
+    <p class="subtitle">{{ questionCount() }} preguntas · aproximadamente {{ estimatedMinutes() }} minutos</p>
+
+    <form [formGroup]="form" (ngSubmit)="submit()">
+      <mat-card class="fields-card">
+        <mat-card-content>
+          <mat-form-field>
+            <mat-label>Nombre completo</mat-label>
+            <input matInput formControlName="candidateName" />
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Correo electrónico</mat-label>
+            <input matInput type="email" formControlName="candidateEmail" />
+          </mat-form-field>
+        </mat-card-content>
+      </mat-card>
+
+      <div class="before-start">
+        <h2>Antes de comenzar</h2>
+        <ul>
+          <li>
+            <mat-icon>desktop_windows</mat-icon>
+            <span>Usa una computadora de escritorio o laptop. No está disponible en móvil.</span>
+          </li>
+          <li>
+            <mat-icon>wifi</mat-icon>
+            <span>Asegúrate de tener una conexión a internet estable.</span>
+          </li>
+          <li>
+            <mat-icon>schedule</mat-icon>
+            <span>Dedica un bloque de tiempo sin interrupciones para completarlo.</span>
+          </li>
+          <li>
+            <mat-icon>error_outline</mat-icon>
+            <span>Una vez que envíes tus respuestas, no podrás modificarlas.</span>
+          </li>
+        </ul>
+      </div>
+
+      <button mat-raised-button color="primary" type="submit" class="submit-button" [disabled]="!canSubmit() || saving()">
+        @if (saving()) {
+          <mat-spinner diameter="20"></mat-spinner>
+        } @else {
+          Comenzar assessment
+        }
+      </button>
+    </form>
+  </div>
+}

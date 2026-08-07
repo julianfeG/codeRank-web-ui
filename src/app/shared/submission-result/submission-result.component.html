@@ -1,0 +1,35 @@
+@if (loading()) {
+  <p>Cargando resultado...</p>
+} @else if (result(); as r) {
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ r.submission.candidateName }}</mat-card-title>
+      <mat-card-subtitle>{{ r.submission.candidateEmail }}</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <mat-chip>Score: {{ r.totalScore }} / {{ r.maxScore }}</mat-chip>
+    </mat-card-content>
+  </mat-card>
+
+  @for (answer of r.answers; track answer.id; let i = $index) {
+    <mat-card class="answer-card">
+      <mat-card-header>
+        <mat-card-title>Pregunta {{ i + 1 }}</mat-card-title>
+        <mat-chip [class.correct]="answer.passed === true" [class.incorrect]="answer.passed === false">
+          {{ answer.passed === null ? 'Sin calificar' : answer.passed ? 'Correcta' : 'Incorrecta' }}
+        </mat-chip>
+      </mat-card-header>
+      <mat-card-content>
+        @if (answer.selectedOptionId) {
+          <p>Opción seleccionada: {{ answer.selectedOptionId }}</p>
+        } @else if (answer.testResults) {
+          <app-test-results [testResults]="answer.testResults" />
+        } @else if (answer.submittedCode) {
+          <p class="pending-note">Código enviado ({{ answer.language }}), aún no ejecutado.</p>
+        } @else {
+          <p class="pending-note">Sin respuesta.</p>
+        }
+      </mat-card-content>
+    </mat-card>
+  }
+}

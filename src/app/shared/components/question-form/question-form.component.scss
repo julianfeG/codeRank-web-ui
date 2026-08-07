@@ -1,0 +1,102 @@
+:host {
+  display: block;
+  height: 100%;
+}
+
+.question-form {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+h2[mat-dialog-title] {
+  margin: 0;
+  flex-shrink: 0;
+}
+
+mat-dialog-content {
+  flex: 1 1 auto;
+  overflow-y: auto;
+  > * {
+    margin-bottom: 4px;
+  }
+}
+
+mat-dialog-actions {
+  flex-shrink: 0;
+}
+
+mat-form-field {
+  width: 100%;
+}
+
+.code-field {
+  font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  font-size: 0.9rem;
+}
+
+.options-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .option-text {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .option-row {
+    flex-wrap: wrap;
+  }
+}
+
+.field-label {
+  font-size: 0.75rem;
+  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+  margin-top: 8px;
+}
+
+.languages-section {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 4px 0 8px;
+}
+
+.field-error {
+  margin: -2px 0 8px;
+  font-size: 0.75rem;
+  color: var(--mat-sys-error, #b3261e);
+}
+
+.test-cases-section {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.test-case-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  .test-case-field {
+    flex: 1 1 0;
+    min-width: 0;
+  }
+}
+
+@media (max-width: 600px) {
+  .test-case-row {
+    flex-wrap: wrap;
+  }
+}
