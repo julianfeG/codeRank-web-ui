@@ -1,0 +1,68 @@
+# Deploy del frontend Angular a S3 + CloudFront en cada push a main.
+#
+# Secrets de GitHub requeridos (Settings > Secrets and variables > Actions):
+#   AWS_DEPLOY_ROLE_ARN  - ARN del rol IAM para OIDC (creado por Terraform de infra)
+#   AWS_REGION           - región AWS del bucket/distribución (ej: us-east-1)
+#   FRONTEND_BUCKET      - nombre del bucket S3 donde se sirve el build
+#   CLOUDFRONT_DIST_ID   - ID de la distribución de CloudFront a invalidar
+#
+# IMPORTANTE: src/environments/environment.ts ya usa apiUrl: '/api' (ruta
+# relativa, proxeada por CloudFront hacia el ALB) — no hace falta tocarlo
+# manualmente antes del deploy. Angular embebe apiUrl en tiempo de
+# compilación, no en runtime, así que cualquier cambio futuro de esa URL
+# requiere un nuevo build+deploy, no alcanza con tocar infra.
+
+name: Deploy Frontend
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  id-token: write # requerido para OIDC (configure-aws-credentials)
+  contents: read # requerido para actions/checkout
+
+concurrency:
+  group: deploy-frontend-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      # No hay job de "check" separado: ng build en modo production falla
+      # si hay errores de tipo/compilación, así que actúa como check y build
+      # a la vez. Si este paso falla, el deploy no continúa (no se llega a S3).
+      - name: Build (production)
+        run: npx ng build --configuration production
+
+      - name: Configure AWS credentials (OIDC)
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_DEPLOY_ROLE_ARN }}
+          aws-region: ${{ secrets.AWS_REGION }}
+
+      - name: Sync build to S3
+        run: >
+          aws s3 sync dist/front/browser
+          s3://${{ secrets.FRONTEND_BUCKET }}
+          --delete
+
+      - name: Invalidate CloudFront cache
+        run: >
+          aws cloudfront create-invalidation
+          --distribution-id ${{ secrets.CLOUDFRONT_DIST_ID }}
+          --paths "/*"
