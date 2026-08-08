@@ -4,6 +4,7 @@
 
 mat-card {
   margin-bottom: 12px;
+  background-color: rgba(255, 255, 255, 0.144);
 }
 
 .answer-card {
@@ -14,9 +15,17 @@ mat-card {
   }
 }
 
+mat-chip.score-chip {
+  --mdc-chip-label-text-color: #ffffff;
+
+  ::ng-deep span {
+    color: #ffffff !important;
+  }
+}
+
 mat-chip.correct {
   --mdc-chip-elevated-container-color: #e3f3e5;
-  --mdc-chip-label-text-color: #1e7e34;
+  --mdc-chip-label-text-color: #24ff57;
 }
 
 mat-chip.incorrect {

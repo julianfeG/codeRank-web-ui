@@ -3,11 +3,39 @@
   height: 100%;
 }
 
+form{
+  background: linear-gradient(135deg, #afb4c0 0%, #a6cac1 100%);
+  background-attachment: fixed;
+  /* Mantener el fondo del material como respaldo para compatibilidad */
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+}
+
 .question-form {
   display: flex;
   flex-direction: column;
   height: 100%;
   box-sizing: border-box;
+
+  &, & * {
+    color: #064e3b !important;
+    font-weight: 700 !important;
+  }
+
+  ::ng-deep mat-radio-button * {
+    color: #064e3bd2 !important;
+    font-weight: 700 !important;
+  }
+
+  ::ng-deep mat-checkbox * {
+    color: #064e3bb2 !important;
+    font-weight: 700 !important;
+  }
+
+  input,
+  textarea {
+    font-weight: 400 !important;
+  }
 }
 
 h2[mat-dialog-title] {
@@ -31,6 +59,15 @@ mat-form-field {
   width: 100%;
 }
 
+
+mat-hint {
+  display: block;
+}
+
+.function-name-field {
+  margin-bottom: 8px;
+}
+
 .code-field {
   font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
   font-size: 0.9rem;
@@ -51,6 +88,19 @@ mat-form-field {
     flex: 1 1 auto;
     min-width: 0;
   }
+
+  button[mat-icon-button] {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
+  }
 }
 
 @media (max-width: 600px) {
@@ -62,7 +112,6 @@ mat-form-field {
 .field-label {
   font-size: 0.75rem;
   color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
-  margin-top: 8px;
 }
 
 .languages-section {
@@ -92,6 +141,19 @@ mat-form-field {
   .test-case-field {
     flex: 1 1 0;
     min-width: 0;
+  }
+
+  button[mat-icon-button] {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    mat-icon {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+    }
   }
 }
 

@@ -1,8 +1,11 @@
 :host {
+  position: fixed;
+  inset: 0;
   display: flex;
   justify-content: center;
   padding: 40px 16px;
   box-sizing: border-box;
+  overflow: hidden;
 }
 
 .loading-message {
@@ -13,10 +16,12 @@
 .start-submission {
   width: 100%;
   max-width: 480px;
+  max-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
+  overflow-y: auto;
 }
 
 .icon-square {
@@ -50,11 +55,14 @@ form {
 
 .fields-card {
   text-align: left;
-
+  background-color: rgba(255, 255, 255, 0.144);
   mat-card-content {
     display: flex;
     flex-direction: column;
     gap: 4px;
+  };
+  input {
+    color: #064e3b !important;
   }
 }
 
@@ -68,7 +76,9 @@ mat-form-field {
   border: 1px solid var(--mat-sys-outline-variant, rgba(0, 0, 0, 0.24));
   border-radius: 12px;
   box-sizing: border-box;
-
+  span {
+    color: #ffffffc4 !important;
+  }
   h2 {
     margin: 0 0 12px;
     font-size: 0.9rem;

@@ -6,8 +6,15 @@
   }
 }
 
+mat-label {
+  font-weight: 600;
+  color: black;
+}
+
 .form-panel {
-  background: var(--mat-sys-surface-container, #eef1f6);
+  background: rgba(255, 255, 255, 0.192);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 12px;
   padding: 1.25rem;
   margin-bottom: 20px;
@@ -18,8 +25,14 @@
   }
 }
 
+
+
 .full-width {
   width: 100%;
+  input,
+  textarea {
+    color: #064e3bd2 !important;
+  }
 }
 
 .char-counter {
@@ -58,3 +71,4 @@
     text-align: center;
   }
 }
+

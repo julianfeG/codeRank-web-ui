@@ -30,7 +30,7 @@
       <div class="options-section" formArrayName="options">
         @for (option of optionsArray.controls; track option; let i = $index) {
           <div class="option-row" [formGroupName]="i">
-            <mat-form-field class="option-text">
+            <mat-form-field class="option-text" subscriptSizing="dynamic">
               <mat-label>Opción {{ i + 1 }}</mat-label>
               <input matInput formControlName="text" />
             </mat-form-field>
@@ -60,7 +60,7 @@
         <p class="field-error">Marcá al menos un lenguaje.</p>
       }
 
-      <mat-form-field>
+      <mat-form-field class="function-name-field" subscriptSizing="dynamic">
         <mat-label>Nombre de la función</mat-label>
         <input matInput formControlName="functionName" />
         <mat-hint>
@@ -76,11 +76,11 @@
       <div class="test-cases-section" formArrayName="testCases">
         @for (testCase of testCasesArray.controls; track testCase; let i = $index) {
           <div class="test-case-row" [formGroupName]="i">
-            <mat-form-field class="test-case-field">
+            <mat-form-field class="test-case-field" subscriptSizing="dynamic">
               <mat-label>Input</mat-label>
               <input matInput formControlName="input" class="code-field" />
             </mat-form-field>
-            <mat-form-field class="test-case-field">
+            <mat-form-field class="test-case-field" subscriptSizing="dynamic">
               <mat-label>Output esperado</mat-label>
               <input matInput formControlName="output" class="code-field" />
             </mat-form-field>

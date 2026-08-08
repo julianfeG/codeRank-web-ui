@@ -4,12 +4,44 @@
 
 .language-toggle {
   margin-bottom: 8px;
+  display: inline-flex;
+  gap: 4px;
+
+  ::ng-deep .mat-button-toggle {
+    border-radius: 8px;
+    overflow: hidden;
+
+    .mat-pseudo-checkbox {
+      --mat-pseudo-checkbox-minimal-selected-checkmark-color: #064e3b;
+    }
+  }
+
+  ::ng-deep .mat-button-toggle-button {
+    background-color: #2cbe4c !important;
+    color: #064e3b !important;
+    font-weight: 700 !important;
+    border-radius: 8px !important;
+  }
+
+  ::ng-deep .mat-button-toggle-label-content {
+    padding: 4px 12px !important;
+    line-height: 1.4 !important;
+  }
+
+  ::ng-deep .mat-button-toggle-checked .mat-button-toggle-button {
+    background-color: #28b34b !important;
+    padding-left: 34px !important;
+  }
 }
 
 .editor-container {
   border: 1px solid var(--mat-sys-outline-variant, rgba(0, 0, 0, 0.24));
   border-radius: 4px;
   overflow: hidden;
+
+  ::ng-deep span {
+    color: #ffffff !important;
+  }
 }
 
 .python-hint {
@@ -22,7 +54,9 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 12px;
+  margin-top: 12px;  
+  margin-bottom: 12px;
+
 }
 
 app-test-results {
