@@ -8,9 +8,17 @@ import { AuthService } from '../services/auth.service';
 const HANDLED_STATUSES = [400, 401, 404, 409];
 
 /**
- * Normalizes the backend's `{ error, details }` error body into an
- * ApiError, shows it in a MatSnackBar, and re-throws the ApiError so
- * callers can still react to it (e.g. to highlight a form field).
+ * Shows the backend's Problem Details error (see ApiError) in a
+ * MatSnackBar, and re-throws the *complete* HttpErrorResponse so callers
+ * can still react to it — e.g. `err.error.codeError` to branch on a
+ * specific case, or `err.error.fieldErrors` to highlight a form field.
+ *
+ * The snackbar copy itself is unchanged from before the Problem Details
+ * migration: `title` is the new shape's equivalent of the old body's
+ * `error` field (a short backend-provided summary), read the same way —
+ * only shown for HANDLED_STATUSES, falling back to a generic message
+ * otherwise. `detail` is deliberately never used here: it's backend
+ * debugging info, not user-facing copy.
  *
  * 401s additionally log the user out and redirect to /login — this also
  * covers a failed login attempt itself (harmless no-op there: there's no
@@ -22,23 +30,20 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((response: HttpErrorResponse) => {
-      const backendMessage = response.error?.error;
-      const apiError: ApiError = {
-        status: response.status,
-        message:
-          HANDLED_STATUSES.includes(response.status) && backendMessage
-            ? backendMessage
-            : 'Ocurrió un error inesperado. Intenta nuevamente.',
-        details: response.error?.details,
-      };
+      const apiError: ApiError | undefined = response.error;
+      const backendMessage = apiError?.title;
+      const message =
+        HANDLED_STATUSES.includes(response.status) && backendMessage
+          ? backendMessage
+          : 'Ocurrió un error inesperado. Intenta nuevamente.';
 
-      snackBar.open(apiError.message, 'Cerrar', { duration: 5000 });
+      snackBar.open(message, 'Cerrar', { duration: 5000 });
 
       if (response.status === 401) {
         authService.logout();
       }
 
-      return throwError(() => apiError);
+      return throwError(() => response);
     }),
   );
 };
