@@ -35,12 +35,20 @@ export class CodeRunner {
   readonly allowedLanguages = input.required<string[]>();
   /** Keyed by language code, e.g. { javascript: '...', python: '...' }. */
   readonly starterCodeTemplates = input<Record<string, string> | null>(null);
+  /**
+   * Previously saved answer for this question, if any — rehydrates the editor after a
+   * reload instead of starting from the starter template. Set once by the parent from
+   * GET /submissions/:id and expected to stay referentially stable afterwards.
+   */
+  readonly savedAnswer = input<SubmissionAnswer | null>(null);
 
   readonly pythonHint = 'Python aún no soportado para ejecución — próximamente vía Judge0.';
 
-  /** null until the candidate explicitly picks one — falls back to the first allowed language below. */
+  /** null until the candidate explicitly picks one — falls back to the saved answer's language, then the first allowed one. */
   private readonly explicitLanguage = signal<string | null>(null);
-  readonly selectedLanguage = computed(() => this.explicitLanguage() ?? this.allowedLanguages()[0] ?? null);
+  readonly selectedLanguage = computed(
+    () => this.explicitLanguage() ?? this.savedAnswer()?.language ?? this.allowedLanguages()[0] ?? null,
+  );
   readonly runDisabled = computed(() => {
     const lang = this.selectedLanguage();
     return !lang || RUN_UNSUPPORTED_LANGUAGES.has(lang);
@@ -58,10 +66,27 @@ export class CodeRunner {
     // starterCodeTemplates every time the effective language changes — both the
     // initial default-language resolution and any later explicit switch via
     // selectLanguage(). Per the MVP, no per-language draft is kept, so unsaved
-    // edits in the previously selected language are lost on switch.
+    // edits in the previously selected language are lost on switch. The one
+    // exception is the saved answer for the language it was submitted in: that
+    // rehydrates the candidate's own code instead of the blank starter template.
     effect(() => {
       const language = this.selectedLanguage();
-      this.code.set(language ? (this.starterCodeTemplates()?.[language] ?? '') : '');
+      const saved = this.savedAnswer();
+      if (language && saved?.language === language && saved.submittedCode != null) {
+        this.code.set(saved.submittedCode);
+      } else {
+        this.code.set(language ? (this.starterCodeTemplates()?.[language] ?? '') : '');
+      }
+    });
+
+    // Show test results from a previous run (before the connection dropped) as if the
+    // candidate had just run it — only fires while nothing has been run yet in this
+    // session, so it never clobbers a fresh run() result.
+    effect(() => {
+      const saved = this.savedAnswer();
+      if (saved?.testResults && !this.result()) {
+        this.result.set(saved);
+      }
     });
   }
 
