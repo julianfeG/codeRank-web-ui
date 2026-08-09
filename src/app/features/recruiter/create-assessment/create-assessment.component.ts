@@ -39,9 +39,11 @@ export class CreateAssessment {
 
   readonly form = this.fb.nonNullable.group({
     title: this.fb.nonNullable.control('', Validators.required),
-    // Optional: the backend doesn't require it either (POST /assessments only
-    // flags title/questionIds as missing), and it shouldn't gate the button.
-    description: this.fb.nonNullable.control(''),
+    // Required on the frontend even though the backend itself still treats it
+    // as optional (POST /assessments only flags title/questionIds as
+    // missing) — a product decision to make recruiters always write one, not
+    // a backend constraint.
+    description: this.fb.nonNullable.control('', Validators.required),
   });
 
   readonly questions = signal<Question[]>([]);
@@ -102,15 +104,28 @@ export class CreateAssessment {
   }
 
   openNewQuestionDialog(): void {
-    // Close to viewport-filling so statement/starterCode/expectedOutput
+    // Close to viewport-filling *width* so statement/starterCode/expectedOutput
     // textareas have room to actually write in. On narrow screens 90vw with
     // a 1100px cap would still feel cramped, so go closer to full width.
+    //
+    // Height is deliberately NOT forced to 90vh: a short form (e.g. a fresh
+    // MULTIPLE_CHOICE question with no options added yet) would render as a
+    // small amount of content marooned at the top of a mostly-empty 90vh
+    // panel, with Cancelar/Guardar stranded far below it. maxHeight alone
+    // lets the dialog hug its actual content and only grow — with
+    // mat-dialog-content scrolling internally, per its CSS — once that
+    // content is taller than 90vh.
     const isNarrow = window.matchMedia('(max-width: 600px)').matches;
     const ref = this.dialog.open(QuestionForm, {
       width: isNarrow ? '96vw' : '90vw',
       maxWidth: isNarrow ? '96vw' : '1100px',
-      height: '90vh',
       maxHeight: '90vh',
+      // Targeted in styles.scss: the frosted-glass card look has to land on
+      // CDK's own .mdc-dialog__surface (the actual dialog box), not on our
+      // component's root — that surface already paints an opaque background
+      // *outside*/around our component, so styling only our own root left a
+      // translucent card floating uselessly inside an already-opaque box.
+      panelClass: 'question-dialog-panel',
     });
     ref.afterClosed().subscribe((created: Question | undefined) => {
       // Reload (instead of appending) so the new question only shows up if it

@@ -1,4 +1,5 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
 import { AbstractControl, FormBuilder, ReactiveFormsModule, ValidationErrors, ValidatorFn, Validators } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -25,6 +26,21 @@ const CODE_LANGUAGES: { code: CodeLanguage; label: string }[] = [
 function atLeastOneLanguageSelected(control: AbstractControl): ValidationErrors | null {
   const value = control.value as Record<string, boolean>;
   return Object.values(value).some(Boolean) ? null : { atLeastOneLanguage: true };
+}
+
+/**
+ * Group-level validator for the `options` FormArray: needs at least one
+ * option (each option's own `text` control is already required, so empty
+ * text is caught separately — this only covers the array-level cases that
+ * wouldn't be: no options at all, or options with none marked correct) and
+ * at least one of them marked as the correct answer.
+ */
+function optionsHaveAtLeastOneCorrect(control: AbstractControl): ValidationErrors | null {
+  const options = control.value as { isCorrect: boolean }[];
+  if (!options.length) {
+    return { noOptions: true };
+  }
+  return options.some((option) => option.isCorrect) ? null : { noCorrectOption: true };
 }
 
 /** Dialog form to create a Question — fields shown depend on the chosen type (MULTIPLE_CHOICE vs CODE). */
@@ -78,22 +94,50 @@ export class QuestionForm {
     return this.form.controls.testCases;
   }
 
+  // form.valid is a plain getter, not a signal — reading it in a computed()
+  // registers no dependency, so it has to be bridged from statusChanges (same
+  // pattern as CreateAssessment.canSubmit).
+  private readonly formStatus = toSignal(this.form.statusChanges, { initialValue: this.form.status });
+  readonly canSubmit = computed(() => this.formStatus() === 'VALID');
+
   constructor() {
     // Seed one empty test-case row so the CODE section starts usable instead of blank.
     this.addTestCase();
 
-    // CODE-only required validators (functionName, languages, testCases) only apply
-    // while type === 'CODE' — toggled here instead of declared upfront so switching
-    // back to MULTIPLE_CHOICE doesn't leave the form permanently invalid.
+    // Type-only required validators only apply to the fields their own
+    // section shows — toggled here instead of declared upfront so switching
+    // type doesn't leave the form permanently invalid because of fields
+    // that are no longer even on screen.
     this.form.controls.type.valueChanges
       .pipe(startWith(this.form.controls.type.value))
-      .subscribe((type) => this.applyCodeValidators(type === 'CODE'));
+      .subscribe((type) => this.applyTypeValidators(type));
   }
 
-  private applyCodeValidators(isCode: boolean): void {
+  private applyTypeValidators(type: QuestionType): void {
+    const isCode = type === 'CODE';
     this.setValidators(this.form.controls.functionName, isCode ? [Validators.required] : []);
     this.setValidators(this.form.controls.languages, isCode ? [atLeastOneLanguageSelected] : []);
     this.setValidators(this.form.controls.testCases, isCode ? [Validators.minLength(1)] : []);
+    this.setValidators(this.form.controls.options, isCode ? [] : [optionsHaveAtLeastOneCorrect]);
+    // Each *row's* own input/output are also required — set unconditionally
+    // by newTestCase(), since a row added from the CODE section (the only
+    // place addTestCase() is ever called from) always needs them. But the
+    // constructor seeds one such row up front regardless of type, so on
+    // MULTIPLE_CHOICE that seed row's required-but-empty input/output would
+    // otherwise pin testCases INVALID forever — for a section the form
+    // doesn't even show. Toggle each row's requiredness in lockstep with
+    // the type instead of just the array-level validator above.
+    for (const testCase of this.testCasesArray.controls) {
+      this.setValidators(testCase.controls.input, isCode ? [Validators.required] : []);
+      this.setValidators(testCase.controls.output, isCode ? [Validators.required] : []);
+    }
+    // Each setValidators() call above updates its own control with
+    // emitEvent: false (deliberately — see its comment), so none of them
+    // bubble up on their own. Recompute the root form once here instead, so
+    // canSubmit (bridged from this.form.statusChanges) reflects the swapped
+    // validators right away rather than waiting on some unrelated field to
+    // change first.
+    this.form.updateValueAndValidity();
   }
 
   private setValidators(control: AbstractControl, validators: ValidatorFn[]): void {

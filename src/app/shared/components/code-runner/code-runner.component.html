@@ -33,6 +33,6 @@
 
 @if (result(); as r) {
   @if (r.testResults) {
-    <app-test-results [testResults]="r.testResults" />
+    <app-test-results [testResults]="r.testResults" [showErrors]="true" />
   }
 }

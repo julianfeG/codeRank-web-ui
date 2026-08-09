@@ -14,4 +14,13 @@
     }
     <p class="summary">{{ passedCount() }}/{{ totalCount() }} casos de prueba pasaron</p>
   </div>
+
+  @if (showErrors() && firstCaseError(); as error) {
+    <div class="errors-section">
+      <div class="error-item">
+        <h4>Error</h4>
+        <pre>{{ error }}</pre>
+      </div>
+    </div>
+  }
 </div>

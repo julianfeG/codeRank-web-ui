@@ -55,6 +55,47 @@
   }
 }
 
+.errors-section {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.error-item {
+  h4 {
+    margin: 0 0 4px;
+    font-size: 0.75rem;
+    // #ffb4ab (not the --mat-sys-error/#b3261e used elsewhere for this same
+    // "error" meaning): those are dark reds meant for *light* surfaces, but
+    // this label sits directly on the app's dark page gradient — same
+    // reasoning as the pre below, and !important for the same reason too.
+    color: #ffb4ab !important;
+  }
+
+  // Same treatment as .first-case-preview pre above (dark box, fixed
+  // regardless of theme) plus a red-tinted border so it reads as an error
+  // at a glance instead of just another expected/actual pair.
+  pre {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 8px;
+    background: #0f172a;
+    border: 1px solid rgba(179, 38, 30, 0.5);
+    border-radius: 4px;
+    // !important: styles.scss forces `color: var(--app-text-color)
+    // !important` on every non-Monaco element (see its comment on the `*`
+    // rule) — without matching it here this pre just renders in that plain
+    // light gray, same as the Esperado/Obtenido boxes, losing the red cue
+    // that flags it as an error.
+    color: #ffb4ab !important;
+    font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+    font-size: 0.85rem;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}
+
 @media (max-width: 600px) {
   .results-header {
     flex-direction: column;

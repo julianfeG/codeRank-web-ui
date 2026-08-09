@@ -12,6 +12,14 @@ mat-label {
   color: black;
 }
 
+// !important: styles.scss forces `color: var(--app-text-color) !important`
+// (light gray) on every non-Monaco element — without matching that here,
+// mat-error would render in that same gray instead of red, indistinguishable
+// from ordinary body text.
+mat-error {
+  color: var(--mat-sys-error, #b3261e) !important;
+}
+
 .form-panel {
   background: rgba(255, 255, 255, 0.192);
   backdrop-filter: blur(8px);

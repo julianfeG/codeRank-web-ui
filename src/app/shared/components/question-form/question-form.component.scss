@@ -3,11 +3,14 @@
   height: 100%;
 }
 
-form{
-  background: linear-gradient(135deg, #afb4c0 0%, #a6cac1 100%);
-  background-attachment: fixed;
-  /* Mantener el fondo del material como respaldo para compatibilidad */
-  background-color: var(--mat-sys-surface);
+form {
+  // The actual card look (frosted-glass fill, shadow, border, radius) lives
+  // globally on .question-dialog-panel .mdc-dialog__surface (styles.scss) —
+  // that's the real dialog box; this element renders *inside* it, so it
+  // only needs to fill that box and give the content some breathing room.
+  height: 100%;
+  box-sizing: border-box;
+  padding: 1.25rem;
   color: var(--mat-sys-on-surface);
 }
 
@@ -22,6 +25,15 @@ form{
     font-weight: 700 !important;
   }
 
+  // Overrides the blanket `& *` rule above for mat-error specifically — it
+  // has higher specificity (adds an element selector), so it wins and error
+  // text actually reads as red instead of blending in as the same dark
+  // green as everything else (which is what functionName's existing
+  // mat-error was silently doing before this rule existed).
+  mat-error {
+    color: var(--mat-sys-error, #b3261e) !important;
+  }
+
   ::ng-deep mat-radio-button * {
     color: #064e3bd2 !important;
     font-weight: 700 !important;
@@ -30,6 +42,14 @@ form{
   ::ng-deep mat-checkbox * {
     color: #064e3bb2 !important;
     font-weight: 700 !important;
+  }
+
+  // The select arrow is an inline SVG using fill: currentColor — explicit
+  // fill here as a safety net, since relying on the `& *` color rule above
+  // to reach it depends on inheritance the arrow's own (higher-specificity)
+  // Material styles could still win against.
+  ::ng-deep .mat-mdc-select-arrow svg {
+    fill: #064e3b !important;
   }
 
   input,

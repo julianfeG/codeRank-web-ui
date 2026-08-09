@@ -45,6 +45,19 @@ body {
 html, body, app-root {
   height: 100%;
   font-family: 'Quicksand', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+}
+
+/* The browser paints the scrollable canvas — the area behind content once
+   it's taller than the viewport — using whichever of html/body supplies a
+   background, and html wins if it has one. Both had only the flat
+   background-color above, so past one viewport of scroll you saw solid navy
+   instead of the gradient below (which, as a plain element background, is
+   clipped to body's own — viewport-capped — box). Repeating the gradient on
+   html makes it the canvas source too, so it now covers the whole document
+   no matter how far down you scroll. */
+html {
+  background: linear-gradient(135deg, #0f172a 0%, #064e3b 100%);
+  background-attachment: fixed;
   background-color: #0f172a;
 }
 
@@ -100,7 +113,16 @@ p, span:not(.monaco-editor *), a, li, label, input, button {
 }
 
 /* Etiquetas de Angular Material y spans en verde oscuro */
-mat-label, .mat-mdc-form-field-label, .mdc-floating-label, span:not(.monaco-editor *) {
+/* mat-label:not(.monaco-editor *) — not just `mat-label`: Angular Material
+   projects <mat-label> content as its own element nested inside
+   .mdc-floating-label, and a bare type selector (specificity 0,0,1) loses
+   this !important fight against the `:not(.monaco-editor *)` rule below
+   (0,1,0, from the class in its :not() argument) that resets color to the
+   page's light gray everywhere. The :not(.monaco-editor *) suffix here
+   (same trick already used for the span selector in this rule) brings
+   mat-label's specificity up to 0,1,1 so it actually wins and the label
+   renders dark green instead of near-invisible light gray. */
+mat-label:not(.monaco-editor *), .mat-mdc-form-field-label, .mdc-floating-label, span:not(.monaco-editor *) {
   color: #064e3b !important;
 }
 /* Botones con fondo verde manzana */
@@ -165,6 +187,26 @@ mat-icon.empty-icon, .empty-icon.mat-icon {
   -webkit-font-feature-settings: 'liga' 1 !important;
   font-feature-settings: 'liga' 1 !important;
   color: var(--app-text-color) !important;
+}
+
+/* "Nueva pregunta" dialog (create-assessment.component.ts) — solid light
+   gray card instead of Angular Material's own opaque near-white default.
+   Has to target the CDK dialog's own surface element directly: that's the
+   box that actually paints a background, casts a shadow and clips overflow,
+   so styling it from inside our own dialog component (an earlier attempt)
+   put a card uselessly *inside* an already-opaque box instead of replacing
+   it — see question-form.component.scss. A translucent+blurred version of
+   this was tried first, but it made the dark-green text harder to read and
+   let the select arrows (which pick up Material's own light gray by
+   default) wash out against it — solid + no blur keeps contrast
+   predictable. box-shadow + border still read as "elevated modal" without
+   needing transparency. !important because Material's own theme sets these
+   via CSS custom properties on the same selector. */
+.question-dialog-panel .mdc-dialog__surface {
+  background: #eef1f6 !important;
+  border-radius: 12px !important;
+  box-shadow: 0 8px 30px rgba(2, 6, 23, 0.6) !important;
+  border: 1px solid rgba(6, 78, 59, 0.14);
 }
 
 /* Margen general para todas las vistas */

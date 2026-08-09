@@ -18,7 +18,9 @@ const HANDLED_STATUSES = [400, 401, 404, 409];
  * `error` field (a short backend-provided summary), read the same way —
  * only shown for HANDLED_STATUSES, falling back to a generic message
  * otherwise. `detail` is deliberately never used here: it's backend
- * debugging info, not user-facing copy.
+ * debugging info, not user-facing copy. When the backend sends a
+ * `codeError`, it's prefixed onto the copy as `(codeError) mensaje` so
+ * it's visible for support/debugging without needing devtools.
  *
  * 401s additionally log the user out and redirect to /login — this also
  * covers a failed login attempt itself (harmless no-op there: there's no
@@ -36,8 +38,9 @@ export const errorInterceptor: HttpInterceptorFn = (req, next) => {
         HANDLED_STATUSES.includes(response.status) && backendMessage
           ? backendMessage
           : 'Ocurrió un error inesperado. Intenta nuevamente.';
+      const snackbarText = apiError?.codeError ? `(${apiError.codeError}) ${message}` : message;
 
-      snackBar.open(message, 'Cerrar', { duration: 5000 });
+      snackBar.open(snackbarText, 'Cerrar', { duration: 5000 });
 
       if (response.status === 401) {
         authService.logout();
