@@ -1,0 +1,50 @@
+// :host wins over the global `app-root > * { margin: 24px 52px !important; }` rule
+// (an attribute-selector host rule outranks a plain type-selector one) so this bar
+// can span full width instead of inheriting the page-content margins.
+:host {
+  display: block;
+  margin: 0 !important;
+  width: 100%;
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+.app-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  padding: 16px 52px;
+  background-color: #0f172a;
+  border-bottom: 1px solid rgba(44, 190, 76, 0.25);
+  box-sizing: border-box;
+}
+
+.brand {
+  font-family: var(--app-font-family);
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  color: #ffffff !important;
+}
+
+.role-tag {
+  font-family: var(--app-font-family);
+  font-size: 14px;
+  font-weight: 600;
+  color: #2cbe4c !important;
+}
+
+@media (max-width: 600px) {
+  .app-header {
+    padding: 12px 16px;
+  }
+
+  .brand {
+    font-size: 20px;
+  }
+
+  .role-tag {
+    font-size: 12px;
+  }
+}
