@@ -51,7 +51,7 @@
     <mat-card class="answer-card">
       <mat-card-header>
         <mat-card-title>Pregunta {{ i + 1 }}</mat-card-title>
-        <mat-chip [class.correct]="row.answer.passed === true" [class.incorrect]="row.answer.passed === false">
+        <mat-chip [class.correct]="row.answer.passed === true" [class.incorrect]="row.answer.passed === false"  [class.null]="row.answer.passed === null">
           {{ row.answer.passed === null ? 'Sin calificar' : row.answer.passed ? 'Correcta' : 'Incorrecta' }}
         </mat-chip>
       </mat-card-header>

@@ -172,6 +172,15 @@ mat-chip.incorrect {
   }
 }
 
+mat-chip.null {
+  --mat-chip-elevated-container-color: #fcfafa;
+  --mat-chip-label-text-color: #010000;
+
+  ::ng-deep span {
+    color: #000000 !important;
+  }
+}
+
 .pending-note {
   margin: 0;
   color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
@@ -213,20 +222,14 @@ mat-chip.incorrect {
   // a colored background — same passed/failed palette app-test-results
   // already uses elsewhere on this page — so a candidate can see at a glance
   // what they picked vs. what they should have.
-  //
-  // !important on color: styles.scss forces `color: var(--app-text-color)
-  // !important` on every element (see its comment on the `*` rule), which
-  // otherwise beats this plain declaration and paints the text light gray —
-  // unreadable against these pale backgrounds. Without !important here the
-  // row would show the right background but near-invisible letters.
   &.selected:not(.correct-option) {
-    background: #f6b9b6;
-    color: #7a1913 !important;
+    background: #ba322b;
+    color: #b3261e;
   }
 
   &.correct-option {
-    background: #a9e3b1;
-    color: #10501e !important;
+    background: #0d5016;
+    color: #29783b;
   }
 }
 

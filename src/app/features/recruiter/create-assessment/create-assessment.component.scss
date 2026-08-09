@@ -12,14 +12,6 @@ mat-label {
   color: black;
 }
 
-// !important: styles.scss forces `color: var(--app-text-color) !important`
-// (light gray) on every non-Monaco element — without matching that here,
-// mat-error would render in that same gray instead of red, indistinguishable
-// from ordinary body text.
-mat-error {
-  color: var(--mat-sys-error, #b3261e) !important;
-}
-
 .form-panel {
   background: rgba(255, 255, 255, 0.192);
   backdrop-filter: blur(8px);
@@ -40,8 +32,12 @@ mat-error {
   width: 100%;
   input,
   textarea {
-    color: #064e3bd2 !important;
+    color: #064e3b !important;
   }
+  mat-label{
+    color: #064e3b7a !important;
+  }
+  
 }
 
 .char-counter {
@@ -75,13 +71,6 @@ mat-error {
   .filter-field {
     min-width: 220px;
 
-    // Fill appearance (same as Título/Descripción above) — no notched
-    // outline, so the label floats cleanly above the box instead of sitting
-    // on a border line (an outline appearance was tried here and made the
-    // bold label overlap/clip against the border notch).
-    // Solid light fill (not a translucent tint of the page's own dark green
-    // background) — a tint blended straight into the dark page and the box
-    // disappeared entirely.
     ::ng-deep .mat-mdc-text-field-wrapper {
       background-color: #e4e6f7;
       border-radius: 10px 10px 0 0;
