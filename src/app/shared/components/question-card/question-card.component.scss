@@ -13,9 +13,19 @@
   background: var(--mat-sys-surface, #fff);
   transition: background-color 0.15s ease;
 
+  // Selected rows drop the one-line truncation on .statement below, which can
+  // wrap it onto multiple lines — align everything to the top so the
+  // checkbox/icon/badge don't end up vertically centered against a tall block.
   &.selected {
+    align-items: flex-start;
     background: var(--mat-sys-secondary-container, #e4e6f7);
     border-color: transparent;
+
+    .statement {
+      white-space: normal;
+      overflow: visible;
+      text-overflow: unset;
+    }
   };
 }
 

@@ -9,7 +9,11 @@
 
     <mat-form-field>
       <mat-label>Categoría</mat-label>
-      <input matInput formControlName="category" />
+      <mat-select formControlName="category">
+        @for (cat of categories; track cat) {
+          <mat-option [value]="cat">{{ cat }}</mat-option>
+        }
+      </mat-select>
     </mat-form-field>
 
     <mat-form-field>

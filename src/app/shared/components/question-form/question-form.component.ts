@@ -10,7 +10,7 @@ import { MatRadioModule } from '@angular/material/radio';
 import { MatSelectModule } from '@angular/material/select';
 import { startWith } from 'rxjs';
 import { QuestionService } from '../../../core/services/question.service';
-import { Difficulty, Question, QuestionType, TestCase } from '../../models';
+import { Difficulty, QUESTION_CATEGORIES, Question, QuestionType, TestCase } from '../../models';
 
 type CodeLanguage = 'javascript' | 'python';
 
@@ -49,6 +49,7 @@ export class QuestionForm {
   private readonly dialogRef = inject(MatDialogRef<QuestionForm>);
 
   readonly difficulties: Difficulty[] = ['EASY', 'MEDIUM', 'HARD'];
+  readonly categories = QUESTION_CATEGORIES;
   readonly codeLanguages = CODE_LANGUAGES;
   readonly saving = signal(false);
 

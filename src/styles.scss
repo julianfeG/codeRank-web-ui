@@ -60,7 +60,10 @@ body {
   --app-font-family: 'Quicksand', system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
 }
 
-*, *::before, *::after {
+/* Monaco necesita su propia fuente monoespaciada para que el código se alinee
+   correctamente — si se lo pisamos con la fuente de la app, además de verse
+   mal, el editor deja de calcular bien el ancho de columna/cursor. */
+*:not(.monaco-editor *), *::before, *::after {
   font-family: var(--app-font-family) !important;
 }
 
@@ -74,7 +77,12 @@ body, app-root {
   font-size: 14px !important; /* texto algo más pequeño */
 }
 
-*, *::before, *::after {
+/* :not(.monaco-editor *) en las reglas de abajo: el editor de código (Monaco)
+   pinta cada token de sintaxis (llaves, funciones, strings...) como su propio
+   <span> con color de la clase asignada por su tema; si estas reglas globales
+   también los alcanzaran, el !important les ganaría y todo el código se vería
+   de un solo color plano. */
+*:not(.monaco-editor *), *::before, *::after {
   color: var(--app-text-color) !important;
 }
 
@@ -86,13 +94,12 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Small text elements to be slightly smaller and grayer */
-p, span, a, li, label, input, button {
+p, span:not(.monaco-editor *), a, li, label, input, button {
   color: var(--app-text-color) !important;
-  font-size: 14px !important;
 }
 
 /* Etiquetas de Angular Material y spans en verde oscuro */
-mat-label, .mat-mdc-form-field-label, .mdc-floating-label, span {
+mat-label, .mat-mdc-form-field-label, .mdc-floating-label, span:not(.monaco-editor *) {
   color: #064e3b !important;
 }
 /* Botones con fondo verde manzana */

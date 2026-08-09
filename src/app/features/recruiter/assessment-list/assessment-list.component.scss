@@ -57,11 +57,39 @@ a.create-button {
   white-space: nowrap;
   color: #ffffff !important;
   font-weight: 700 !important;
+  background: linear-gradient(135deg, #22c55e 0%, #15803d 100%) !important;
+  box-shadow: 0 4px 14px rgba(34, 197, 94, 0.45);
+  border: none !important;
+
+  &:hover {
+    background: linear-gradient(135deg, #16a34a 0%, #0f6b31 100%) !important;
+    box-shadow: 0 6px 18px rgba(34, 197, 94, 0.55);
+  }
 
   ::ng-deep .mdc-button__label,
   ::ng-deep .mat-icon {
     color: #ffffff !important;
     font-weight: 700 !important;
+  }
+}
+
+.logout-button {
+  background-color: rgba(248, 113, 113, 0.14) !important;
+  border: 1.5px solid rgba(248, 113, 113, 0.4) !important;
+  color: #fca5a5 !important;
+  box-shadow: none !important;
+
+  // Material wraps the button's text in .mdc-button__label — the global
+  // `span { color: ... !important }` rule targets that inner span directly
+  // (not just the button), so it needs its own override to actually show red.
+  ::ng-deep .mdc-button__label,
+  mat-icon {
+    color: #fca5a5 !important;
+  }
+
+  &:hover {
+    background-color: rgba(248, 113, 113, 0.22) !important;
+    border-color: rgba(248, 113, 113, 0.6) !important;
   }
 }
 
@@ -103,6 +131,24 @@ a.create-button {
   justify-content: space-between;
   gap: 16px;
   padding: 16px 20px;
+}
+
+.expand-toggle {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  mat-icon {
+    transition: transform 0.15s ease;
+  }
+
+  &.expanded mat-icon {
+    transform: rotate(180deg);
+  }
 }
 
 .row-main {
@@ -183,6 +229,107 @@ a.create-button {
   line-height: 20px;
   background: var(--mat-sys-surface-variant, rgba(0, 0, 0, 0.08));
   color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.7));
+}
+
+.delete-button {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #b3261e !important;
+
+  &:hover {
+    background-color: #942018 !important;
+  }
+
+  mat-icon {
+    color: #ffffff !important;
+  }
+}
+
+.questions-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px 20px 20px 68px;
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.questions-loading {
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+}
+
+.questions-empty {
+  margin: 0;
+  padding: 12px 14px;
+  font-size: 0.85rem;
+  color: var(--app-text-color, #e6e7eb) !important;
+  opacity: 0.8;
+}
+
+.question-row-readonly {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.07);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+
+  .type-icon {
+    flex-shrink: 0;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(255, 255, 255, 0.12);
+
+    mat-icon {
+      color: #6ee7b7 !important;
+      width: 20px !important;
+      height: 20px !important;
+      font-size: 20px !important;
+      line-height: 20px !important;
+    }
+  }
+
+  .category {
+    flex-shrink: 0;
+    font-size: 0.8rem;
+    color: #6ee7b7 !important;
+    font-weight: 700 !important;
+    max-width: 140px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .statement {
+    flex: 1 1 auto;
+    min-width: 0;
+    color: var(--app-text-color, #e6e7eb) !important;
+    font-weight: 500 !important;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 600px) {
+  .questions-panel {
+    padding: 4px 16px 16px;
+  }
+
+  .question-row-readonly .category {
+    display: none;
+  }
 }
 
 @media (max-width: 768px) {

@@ -3,7 +3,17 @@
 } @else if (assessment(); as a) {
   <h1>{{ a.title }}</h1>
 
-  @for (aq of orderedQuestions(); track aq.questionId) {
+  @if (orderedQuestions().length > 0) {
+    <div class="progress">
+      <p class="progress-label">Pregunta {{ currentIndex() + 1 }} de {{ orderedQuestions().length }}</p>
+      <mat-progress-bar
+        mode="determinate"
+        [value]="((currentIndex() + 1) / orderedQuestions().length) * 100"
+      />
+    </div>
+  }
+
+  @if (currentQuestion(); as aq) {
     <section class="question">
       <h3>{{ aq.question.category }}</h3>
       <p>{{ aq.question.statement }}</p>
@@ -29,9 +39,19 @@
         />
       }
     </section>
-  }
 
-  <button mat-raised-button color="primary" class="submit-button" [disabled]="submitting()" (click)="submitAssessment()">
-    Enviar assessment
-  </button>
+    <div class="navigation">
+      <button mat-stroked-button [disabled]="currentIndex() === 0" (click)="goToPrevious()">
+        Anterior
+      </button>
+      <button
+        mat-raised-button
+        color="primary"
+        [disabled]="submitting()"
+        (click)="goToNextOrFinish()"
+      >
+        {{ isLastQuestion() ? 'Finalizar' : 'Siguiente' }}
+      </button>
+    </div>
+  }
 }

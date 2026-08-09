@@ -27,4 +27,8 @@ export class AssessmentService {
   getSubmissions(assessmentId: string): Observable<SubmissionSummary[]> {
     return this.http.get<SubmissionSummary[]>(`/assessments/${assessmentId}/submissions`);
   }
+
+  deleteAssessment(id: string): Observable<void> {
+    return this.http.delete<void>(`/assessments/${id}`);
+  }
 }

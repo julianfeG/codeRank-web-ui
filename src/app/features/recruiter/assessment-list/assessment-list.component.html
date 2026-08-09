@@ -12,7 +12,7 @@
       <p class="subtitle">{{ assessments().length }} assessments creados</p>
     </div>
     <div class="header-actions">
-      <button mat-button (click)="authService.logout()">
+      <button mat-button class="logout-button" (click)="authService.logout()">
         <mat-icon>logout</mat-icon>
         Cerrar sesión
       </button>
@@ -34,6 +34,17 @@
     <div class="assessment-list">
       @for (assessment of assessments(); track assessment.id; let last = $last) {
         <div class="assessment-row">
+          <button
+            mat-icon-button
+            class="expand-toggle"
+            [class.expanded]="expandedId() === assessment.id"
+            [attr.aria-expanded]="expandedId() === assessment.id"
+            [attr.aria-label]="expandedId() === assessment.id ? 'Colapsar preguntas' : 'Expandir preguntas'"
+            (click)="toggleExpand(assessment)"
+          >
+            <mat-icon>expand_more</mat-icon>
+          </button>
+
           <div class="row-main">
             <div class="row-icon">
               <mat-icon>description</mat-icon>
@@ -62,8 +73,45 @@
               Candidatos
               <span class="count-badge">{{ assessment.submissionCount }}</span>
             </button>
+            <button
+              mat-icon-button
+              color="warn"
+              class="delete-button"
+              aria-label="Eliminar assessment"
+              [disabled]="deletingId() === assessment.id"
+              (click)="deleteAssessment(assessment)"
+            >
+              @if (deletingId() === assessment.id) {
+                <mat-spinner diameter="20" />
+              } @else {
+                <mat-icon>delete</mat-icon>
+              }
+            </button>
           </div>
         </div>
+
+        @if (expandedId() === assessment.id) {
+          <div class="questions-panel">
+            @if (loadingQuestionsId() === assessment.id) {
+              <div class="questions-loading">
+                <mat-spinner diameter="24" />
+              </div>
+            } @else {
+              @for (ref of questionsFor(assessment.id); track ref.questionId) {
+                <div class="question-row-readonly">
+                  <div class="type-icon">
+                    <mat-icon>{{ ref.question.type === 'CODE' ? 'code' : 'checklist' }}</mat-icon>
+                  </div>
+                  <span class="category">{{ ref.question.category }}</span>
+                  <app-difficulty-badge [difficulty]="ref.question.difficulty" />
+                  <span class="statement">{{ ref.question.statement }}</span>
+                </div>
+              } @empty {
+                <p class="questions-empty">Este assessment no tiene preguntas.</p>
+              }
+            }
+          </div>
+        }
 
         @if (!last) {
           <mat-divider />

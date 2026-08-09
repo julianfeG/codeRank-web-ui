@@ -1,5 +1,6 @@
 :host {
   display: block;
+  padding-bottom: 48px;
 
   * {
     box-sizing: border-box;
@@ -41,6 +42,68 @@ mat-label {
   color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
   margin-top: -12px;
   margin-bottom: 8px;
+}
+
+// Wraps the filters + "Nueva pregunta" button in one row: filters on the
+// left, button pinned to the right via margin-left: auto.
+.question-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-top: 16px;
+
+  > button {
+    margin-left: auto;
+  }
+}
+
+.question-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+
+  .filter-field {
+    min-width: 220px;
+
+    // Fill appearance (same as Título/Descripción above) — no notched
+    // outline, so the label floats cleanly above the box instead of sitting
+    // on a border line (an outline appearance was tried here and made the
+    // bold label overlap/clip against the border notch).
+    // Solid light fill (not a translucent tint of the page's own dark green
+    // background) — a tint blended straight into the dark page and the box
+    // disappeared entirely.
+    ::ng-deep .mat-mdc-text-field-wrapper {
+      background-color: #e4e6f7;
+      border-radius: 10px 10px 0 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+      transition: background-color 0.15s ease;
+    }
+
+    &:hover ::ng-deep .mat-mdc-text-field-wrapper {
+      background-color: #f1f2fb;
+    }
+
+    ::ng-deep .mdc-line-ripple::before {
+      border-bottom-color: #064e3b;
+      border-bottom-width: 1.5px;
+    }
+
+    ::ng-deep .mdc-line-ripple::after {
+      border-bottom-color: #064e3b;
+    }
+
+    ::ng-deep .mat-mdc-select-value-text {
+      color: #064e3b;
+      font-weight: 700;
+    }
+
+    ::ng-deep .mat-mdc-select-arrow svg {
+      fill: #064e3b;
+      transform: scale(1.3);
+    }
+  }
 }
 
 .question-bank {

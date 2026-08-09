@@ -16,7 +16,31 @@
   </form>
 </div>
 
-<button mat-stroked-button (click)="openNewQuestionDialog()">+ Nueva pregunta</button>
+<div class="question-toolbar">
+  <div class="question-filters">
+    <mat-form-field class="filter-field" subscriptSizing="dynamic">
+      <mat-label>Categoría</mat-label>
+      <mat-select [value]="categoryFilter()" (selectionChange)="onCategoryFilterChange($event.value)">
+        <mat-option value="">Todas</mat-option>
+        @for (cat of categories; track cat) {
+          <mat-option [value]="cat">{{ cat }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="filter-field" subscriptSizing="dynamic">
+      <mat-label>Dificultad</mat-label>
+      <mat-select [value]="difficultyFilter()" (selectionChange)="onDifficultyFilterChange($event.value)">
+        <mat-option value="">Todas</mat-option>
+        @for (level of difficulties; track level) {
+          <mat-option [value]="level">{{ level }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  <button mat-stroked-button (click)="openNewQuestionDialog()">+ Nueva pregunta</button>
+</div>
 
 <div class="question-bank">
   @for (q of questions(); track q.id) {

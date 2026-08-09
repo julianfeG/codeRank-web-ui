@@ -3,10 +3,12 @@ import { MatIconModule } from '@angular/material/icon';
 import { TestResult } from '../../models';
 
 /**
- * Renders a CODE answer's graded test cases — one row per TestResult with its
- * input/expected/actual and a passed/failed icon, plus an aggregate "X/Y pasaron"
- * summary computed from the array (there's no separate score field to read here).
- * Shared between app-code-runner (right after a run) and the submission-result screen.
+ * Renders a CODE answer's graded test cases: an aggregate "X/Y pasaron" summary
+ * computed from the array (there's no separate score field to read here), plus
+ * optionally one row per TestResult with its input/expected/actual and a
+ * passed/failed icon. Shared between app-code-runner (right after a run — where
+ * showDetails is off so the candidate can't read the test cases mid-attempt) and
+ * the submission-result screen (full detail, once the assessment is over).
  */
 @Component({
   selector: 'app-test-results',
@@ -16,6 +18,8 @@ import { TestResult } from '../../models';
 })
 export class TestResultsView {
   readonly testResults = input.required<TestResult[]>();
+  /** Whether to render the per-case input/expected/actual rows below the summary. Off hides them (e.g. while the candidate is still solving, to avoid leaking test data). */
+  readonly showDetails = input<boolean>(true);
 
   readonly totalCount = computed(() => this.testResults().length);
   readonly passedCount = computed(() => this.testResults().filter((t) => t.passed).length);

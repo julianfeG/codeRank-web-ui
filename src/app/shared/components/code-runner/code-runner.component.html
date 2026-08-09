@@ -10,35 +10,26 @@
 </mat-button-toggle-group>
 
 <div class="editor-container" style="height: 300px">
-  <ngx-monaco-editor style="height: 100%" [options]="editorOptions()" [(ngModel)]="code" />
+  <ngx-monaco-editor
+    style="height: 100%"
+    [options]="editorOptions()"
+    [ngModel]="code()"
+    (ngModelChange)="onCodeChange($event)"
+  />
 </div>
 
-@if (selectedLanguage() === 'python') {
-  <p class="python-hint">{{ pythonHint }}</p>
-}
-
 <div class="actions">
-  <button mat-stroked-button [disabled]="saving() || running()" (click)="save()">
-    @if (saving()) {
+  <button mat-raised-button class="run-button" [disabled]="running() || runDisabled()" (click)="run()">
+    @if (running()) {
       <mat-spinner diameter="18"></mat-spinner>
     } @else {
-      Guardar
+      Ejecutar
     }
   </button>
-
-  <span [matTooltip]="pythonHint" [matTooltipDisabled]="!runDisabled()">
-    <button mat-raised-button color="primary" [disabled]="running() || saving() || runDisabled()" (click)="run()">
-      @if (running()) {
-        <mat-spinner diameter="18"></mat-spinner>
-      } @else {
-        Ejecutar
-      }
-    </button>
-  </span>
 </div>
 
 @if (result(); as r) {
   @if (r.testResults) {
-    <app-test-results [testResults]="r.testResults" />
+    <app-test-results [testResults]="r.testResults" [showDetails]="false" />
   }
 }

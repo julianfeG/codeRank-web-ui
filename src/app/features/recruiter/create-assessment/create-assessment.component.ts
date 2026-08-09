@@ -5,17 +5,28 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { Router } from '@angular/router';
 import { AssessmentService } from '../../../core/services/assessment.service';
 import { QuestionService } from '../../../core/services/question.service';
 import { QuestionCard } from '../../../shared/components/question-card/question-card.component';
 import { QuestionForm } from '../../../shared/components/question-form/question-form.component';
-import { Question } from '../../../shared/models';
+import { Difficulty, QUESTION_CATEGORIES, Question } from '../../../shared/models';
+
+/** Sentinel option value for "no filter" in the category/difficulty selects — kept out of the query params. */
+const ALL = '' as const;
 
 /** Question bank in selection mode (checkboxes) + title/description form to create an assessment. */
 @Component({
   selector: 'app-create-assessment',
-  imports: [ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule, QuestionCard],
+  imports: [
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInputModule,
+    MatSelectModule,
+    MatButtonModule,
+    QuestionCard,
+  ],
   templateUrl: './create-assessment.component.html',
   styleUrl: './create-assessment.component.scss',
 })
@@ -37,6 +48,11 @@ export class CreateAssessment {
   readonly selectedIds = signal<Set<string>>(new Set());
   readonly saving = signal(false);
 
+  readonly categories = QUESTION_CATEGORIES;
+  readonly difficulties: Difficulty[] = ['EASY', 'MEDIUM', 'HARD'];
+  readonly categoryFilter = signal<string>(ALL);
+  readonly difficultyFilter = signal<Difficulty | typeof ALL>(ALL);
+
   // `form.valid` is a plain getter, not a signal — reading it inside a
   // computed() registers no dependency, so it must be bridged from
   // statusChanges. (Bridging it also fixes a subtler bug: the old
@@ -52,10 +68,31 @@ export class CreateAssessment {
   });
 
   constructor() {
-    this.questionService.getQuestions().subscribe({
-      next: (questions) => this.questions.set(questions),
-      error: () => this.questions.set([]),
-    });
+    this.loadQuestions();
+  }
+
+  private loadQuestions(): void {
+    const category = this.categoryFilter();
+    const difficulty = this.difficultyFilter();
+    this.questionService
+      .getQuestions({
+        category: category === ALL ? undefined : category,
+        difficulty: difficulty === ALL ? undefined : difficulty,
+      })
+      .subscribe({
+        next: (questions) => this.questions.set(questions),
+        error: () => this.questions.set([]),
+      });
+  }
+
+  onCategoryFilterChange(category: string): void {
+    this.categoryFilter.set(category);
+    this.loadQuestions();
+  }
+
+  onDifficultyFilterChange(difficulty: Difficulty | typeof ALL): void {
+    this.difficultyFilter.set(difficulty);
+    this.loadQuestions();
   }
 
   toggleSelection(id: string, checked: boolean): void {
@@ -76,8 +113,10 @@ export class CreateAssessment {
       maxHeight: '90vh',
     });
     ref.afterClosed().subscribe((created: Question | undefined) => {
+      // Reload (instead of appending) so the new question only shows up if it
+      // actually matches whatever category/difficulty filters are active.
       if (created) {
-        this.questions.update((qs) => [...qs, created]);
+        this.loadQuestions();
       }
     });
   }

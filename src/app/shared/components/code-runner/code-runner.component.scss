@@ -38,25 +38,22 @@
   border: 1px solid var(--mat-sys-outline-variant, rgba(0, 0, 0, 0.24));
   border-radius: 4px;
   overflow: hidden;
-
-  ::ng-deep span {
-    color: #ffffff !important;
-  }
-}
-
-.python-hint {
-  margin: 8px 0 0;
-  font-size: 0.8rem;
-  color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+  // No forzamos color en los <span> internos: son los tokens de sintaxis que
+  // pinta Monaco (llaves, funciones, strings...) según el tema 'vs-dark', y
+  // el global styles.scss ya los excluye de su reset de color por la misma razón.
 }
 
 .actions {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-top: 12px;  
+  margin-top: 12px;
   margin-bottom: 12px;
+}
 
+.run-button {
+  background-color: var(--mat-sys-surface-container-high, #e2e2e6) !important;
+  color: var(--mat-sys-on-surface, rgba(0, 0, 0, 0.87)) !important;
 }
 
 app-test-results {

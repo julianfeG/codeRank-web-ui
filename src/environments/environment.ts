@@ -11,4 +11,6 @@
 export const environment = {
   production: true,
   apiUrl: '/api',
+  /** How long the code-runner editor must sit idle before auto-saving (ms). */
+  codeAutoSaveIdleMs: 3000,
 };

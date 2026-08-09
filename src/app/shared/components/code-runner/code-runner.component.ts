@@ -1,11 +1,12 @@
 import { Component, computed, effect, inject, input, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { MatTooltipModule } from '@angular/material/tooltip';
 import { EditorComponent } from 'ngx-monaco-editor-v2';
-import { switchMap } from 'rxjs';
+import { Subject, debounceTime, switchMap } from 'rxjs';
+import { environment } from '../../../../environments/environment';
 import { SubmissionService } from '../../../core/services/submission.service';
 import { SubmissionAnswer } from '../../models';
 import { TestResultsView } from '../test-results/test-results.component';
@@ -13,17 +14,16 @@ import { TestResultsView } from '../test-results/test-results.component';
 /** Display labels for the languages the backend currently supports — falls back to the raw code for anything unlisted. */
 const LANGUAGE_LABELS: Record<string, string> = { javascript: 'JavaScript', python: 'Python' };
 
-/** Languages the backend can't execute yet — run-code would 4xx, so the UI blocks it instead of round-tripping the error. */
-const RUN_UNSUPPORTED_LANGUAGES = new Set(['python']);
-
 /**
- * Language picker + Monaco editor + Guardar/Ejecutar, reused in resolve-assessment.
- * "Guardar" only upserts the answer (saveAnswer); "Ejecutar" does that too and then
- * runs it (run-code requires an answer to already exist for the question).
+ * Language picker + Monaco editor + Ejecutar, reused in resolve-assessment.
+ * There's no explicit "Guardar" button — the code is auto-saved (saveAnswer)
+ * once the candidate stops typing for environment.codeAutoSaveIdleMs.
+ * "Ejecutar" saves immediately and then runs it (run-code requires an answer
+ * to already exist for the question).
  */
 @Component({
   selector: 'app-code-runner',
-  imports: [FormsModule, EditorComponent, MatButtonModule, MatButtonToggleModule, MatTooltipModule, MatProgressSpinnerModule, TestResultsView],
+  imports: [FormsModule, EditorComponent, MatButtonModule, MatButtonToggleModule, MatProgressSpinnerModule, TestResultsView],
   templateUrl: './code-runner.component.html',
   styleUrl: './code-runner.component.scss',
 })
@@ -42,22 +42,20 @@ export class CodeRunner {
    */
   readonly savedAnswer = input<SubmissionAnswer | null>(null);
 
-  readonly pythonHint = 'Python aún no soportado para ejecución — próximamente vía Judge0.';
-
   /** null until the candidate explicitly picks one — falls back to the saved answer's language, then the first allowed one. */
   private readonly explicitLanguage = signal<string | null>(null);
   readonly selectedLanguage = computed(
     () => this.explicitLanguage() ?? this.savedAnswer()?.language ?? this.allowedLanguages()[0] ?? null,
   );
-  readonly runDisabled = computed(() => {
-    const lang = this.selectedLanguage();
-    return !lang || RUN_UNSUPPORTED_LANGUAGES.has(lang);
-  });
+  readonly runDisabled = computed(() => !this.selectedLanguage());
 
   readonly code = signal('');
   readonly saving = signal(false);
   readonly running = signal(false);
   readonly result = signal<SubmissionAnswer | null>(null);
+
+  /** Emits on every keystroke from the candidate (not on programmatic code.set()) — drives the idle auto-save. */
+  private readonly codeEdited$ = new Subject<void>();
 
   readonly editorOptions = computed(() => ({ theme: 'vs-dark', language: this.selectedLanguage() ?? 'javascript' }));
 
@@ -88,6 +86,12 @@ export class CodeRunner {
         this.result.set(saved);
       }
     });
+
+    // No explicit "Guardar" button — once the candidate stops typing for
+    // environment.codeAutoSaveIdleMs, persist whatever is in the editor, same as the old button did.
+    this.codeEdited$
+      .pipe(debounceTime(environment.codeAutoSaveIdleMs), takeUntilDestroyed())
+      .subscribe(() => this.save());
   }
 
   languageLabel(code: string): string {
@@ -98,9 +102,14 @@ export class CodeRunner {
     this.explicitLanguage.set(language);
   }
 
-  save(): void {
+  onCodeChange(value: string): void {
+    this.code.set(value);
+    this.codeEdited$.next();
+  }
+
+  private save(): void {
     const language = this.selectedLanguage();
-    if (!language || this.saving()) {
+    if (!language || this.saving() || this.running()) {
       return;
     }
     this.saving.set(true);

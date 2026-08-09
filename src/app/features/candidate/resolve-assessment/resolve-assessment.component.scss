@@ -9,3 +9,18 @@
     margin: 12px 16px;
   }
 }
+
+.progress {
+  margin-bottom: 16px;
+
+  .progress-label {
+    margin: 0 0 8px;
+    font-weight: 500;
+  }
+}
+
+.navigation {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 24px;
+}
