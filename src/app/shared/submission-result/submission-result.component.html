@@ -1,31 +1,89 @@
 @if (loading()) {
   <p>Cargando resultado...</p>
 } @else if (result(); as r) {
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>{{ r.submission.candidateName }}</mat-card-title>
-      <mat-card-subtitle>{{ r.submission.candidateEmail }}</mat-card-subtitle>
-    </mat-card-header>
-    <mat-card-content>
-      <mat-chip class="score-chip">Score: {{ r.totalScore }} / {{ r.maxScore }}</mat-chip>
-    </mat-card-content>
-  </mat-card>
+  <header class="result-header">
+    <div class="candidate-info">
+      <h1>{{ r.submission.candidateName }}</h1>
+      <p class="email">{{ r.submission.candidateEmail }}</p>
+    </div>
+    <div class="score-summary">
+      <span class="score-percent">{{ passPercent(r) }}%</span>
+      <span class="score-fraction">{{ r.totalScore }} / {{ r.maxScore }} de aprobación</span>
+    </div>
+  </header>
 
-  @for (answer of r.answers; track answer.id; let i = $index) {
+  @if (isCandidateView && r.submission.status === 'SUBMITTED') {
+    @if (passed(r)) {
+      <div class="result-banner success">
+        <div class="confetti" aria-hidden="true">
+          @for (piece of confettiPieces; track $index) {
+            <span
+              class="confetti-piece"
+              [style.left.%]="piece.left"
+              [style.animation-delay.s]="piece.delay"
+              [style.animation-duration.s]="piece.duration"
+              [style.background]="piece.color"
+              [style.transform]="'rotate(' + piece.rotate + 'deg)'"
+            ></span>
+          }
+        </div>
+        <mat-icon>celebration</mat-icon>
+        <div>
+          <h2>¡Felicidades, pasaste el examen!</h2>
+          <p>Te contactaremos en los próximos días con los siguientes pasos.</p>
+        </div>
+      </div>
+    } @else {
+      <div class="result-banner rejected">
+        <mat-icon>info</mat-icon>
+        <div>
+          <h2>Gracias por participar</h2>
+          <p>
+            En esta ocasión no continuaremos con tu proceso, pero agradecemos mucho el tiempo y el
+            esfuerzo que invertiste. ¡Te deseamos mucho éxito en tus próximas oportunidades!
+          </p>
+        </div>
+      </div>
+    }
+  }
+
+  @for (row of rows(); track row.answer.id; let i = $index) {
     <mat-card class="answer-card">
       <mat-card-header>
         <mat-card-title>Pregunta {{ i + 1 }}</mat-card-title>
-        <mat-chip [class.correct]="answer.passed === true" [class.incorrect]="answer.passed === false">
-          {{ answer.passed === null ? 'Sin calificar' : answer.passed ? 'Correcta' : 'Incorrecta' }}
+        <mat-chip [class.correct]="row.answer.passed === true" [class.incorrect]="row.answer.passed === false">
+          {{ row.answer.passed === null ? 'Sin calificar' : row.answer.passed ? 'Correcta' : 'Incorrecta' }}
         </mat-chip>
       </mat-card-header>
       <mat-card-content>
-        @if (answer.selectedOptionId) {
-          <p>Opción seleccionada: {{ answer.selectedOptionId }}</p>
-        } @else if (answer.testResults) {
-          <app-test-results [testResults]="answer.testResults" />
-        } @else if (answer.submittedCode) {
-          <p class="pending-note">Código enviado ({{ answer.language }}), aún no ejecutado.</p>
+        @if (row.question; as q) {
+          <p class="statement">{{ q.statement }}</p>
+        }
+
+        @if (row.answer.selectedOptionId) {
+          @if (row.question?.options?.length) {
+            <div class="options-list">
+              @for (option of row.question!.options; track option.id) {
+                <div
+                  class="option-row"
+                  [class.selected]="option.id === row.answer.selectedOptionId"
+                  [class.correct-option]="option.isCorrect"
+                >
+                  <mat-icon>{{ optionIcon(option, row.answer.selectedOptionId) }}</mat-icon>
+                  <span class="option-text">{{ option.text }}</span>
+                  @if (option.id === row.answer.selectedOptionId) {
+                    <span class="tag">Tu respuesta</span>
+                  }
+                </div>
+              }
+            </div>
+          } @else {
+            <p>Opción seleccionada: {{ row.answer.selectedOptionId }}</p>
+          }
+        } @else if (row.answer.testResults) {
+          <app-test-results [testResults]="row.answer.testResults" />
+        } @else if (row.answer.submittedCode) {
+          <p class="pending-note">Código enviado ({{ row.answer.language }}), aún no ejecutado.</p>
         } @else {
           <p class="pending-note">Sin respuesta.</p>
         }

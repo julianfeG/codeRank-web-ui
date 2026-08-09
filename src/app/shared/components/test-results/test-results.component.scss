@@ -2,42 +2,20 @@
   display: block;
 }
 
-.summary {
-  margin: 0 0 10px;
-  font-weight: 500;
-}
-
-.test-result-row {
+.results-header {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
-  padding: 10px 12px;
-  border-radius: 8px;
-  margin-bottom: 8px;
-
-  &.passed {
-    background: #e3f3e5;
-
-    .status-icon {
-      color: #1e7e34;
-    }
-  }
-
-  &.failed {
-    background: #fbe4e3;
-
-    .status-icon {
-      color: #b3261e;
-    }
-  }
+  gap: 16px;
+  margin-bottom: 10px;
 }
 
-.status-icon {
-  flex-shrink: 0;
-  margin-top: 2px;
+.summary {
+  margin: 0 0 0 auto;
+  font-weight: 500;
+  white-space: nowrap;
 }
 
-.test-result-fields {
+.first-case-preview {
   display: flex;
   flex: 1 1 auto;
   gap: 12px;
@@ -54,11 +32,20 @@
     color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
   }
 
+  // Fixed dark background instead of the theme's --mat-sys-surface-container:
+  // that variable resolves to a light surface here (the app never switches
+  // Material's color-scheme to dark, just paints a dark gradient over it), so
+  // together with the global light text color it made expected/actual nearly
+  // unreadable — light text on a light box. min-height keeps the
+  // Esperado/Obtenido pair the same height even when one side is empty (e.g.
+  // no output yet), instead of the empty one collapsing to a sliver.
   pre {
+    box-sizing: border-box;
+    min-height: 38px;
     margin: 0;
     padding: 8px;
-    background: var(--mat-sys-surface-container, #eef1f6);
-    color: var(--mat-sys-on-surface, inherit);
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.08);
     border-radius: 4px;
     font-family: 'Roboto Mono', ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
     font-size: 0.85rem;
@@ -68,19 +55,16 @@
   }
 }
 
-.test-error {
-  flex-basis: 100%;
-  margin: 6px 0 0;
-  color: #b3261e;
-  font-size: 0.85rem;
-}
-
 @media (max-width: 600px) {
-  .test-result-row {
+  .results-header {
     flex-direction: column;
   }
 
-  .test-result-fields {
+  .first-case-preview {
     flex-direction: column;
+  }
+
+  .summary {
+    margin-left: 0;
   }
 }

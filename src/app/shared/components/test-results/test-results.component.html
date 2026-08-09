@@ -1,28 +1,17 @@
 <div class="test-results">
-  <p class="summary">{{ passedCount() }}/{{ totalCount() }} casos de prueba pasaron</p>
-
-  @if (showDetails()) {
-    @for (t of testResults(); track $index) {
-      <div class="test-result-row" [class.passed]="t.passed" [class.failed]="!t.passed">
-        <mat-icon class="status-icon">{{ t.passed ? 'check_circle' : 'cancel' }}</mat-icon>
-        <div class="test-result-fields">
-          <div>
-            <h4>Input</h4>
-            <pre>{{ formatValue(t.input) }}</pre>
-          </div>
-          <div>
-            <h4>Esperado</h4>
-            <pre>{{ formatValue(t.expectedOutput) }}</pre>
-          </div>
-          <div>
-            <h4>Obtenido</h4>
-            <pre>{{ formatValue(t.actualOutput) }}</pre>
-          </div>
+  <div class="results-header">
+    @if (firstCase(); as fc) {
+      <div class="first-case-preview">
+        <div>
+          <h4>Esperado</h4>
+          <pre>{{ formatValue(fc.expectedOutput) }}</pre>
         </div>
-        @if (t.error) {
-          <p class="test-error">{{ t.error }}</p>
-        }
+        <div>
+          <h4>Obtenido</h4>
+          <pre>{{ formatValue(fc.actualOutput) }}</pre>
+        </div>
       </div>
     }
-  }
+    <p class="summary">{{ passedCount() }}/{{ totalCount() }} casos de prueba pasaron</p>
+  </div>
 </div>

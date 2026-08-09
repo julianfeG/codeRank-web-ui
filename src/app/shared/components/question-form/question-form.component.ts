@@ -12,12 +12,13 @@ import { startWith } from 'rxjs';
 import { QuestionService } from '../../../core/services/question.service';
 import { Difficulty, QUESTION_CATEGORIES, Question, QuestionType, TestCase } from '../../models';
 
-type CodeLanguage = 'javascript' | 'python';
+type CodeLanguage = 'javascript' | 'python' | 'java';
 
-/** The only two languages the backend currently accepts for CODE questions — hardcoded, no catalog endpoint exists. */
+/** The only languages the backend currently accepts for CODE questions — hardcoded, no catalog endpoint exists. Java runs on Judge0 language_id 91 (JDK 17.0.6). */
 const CODE_LANGUAGES: { code: CodeLanguage; label: string }[] = [
   { code: 'javascript', label: 'JavaScript' },
   { code: 'python', label: 'Python' },
+  { code: 'java', label: 'Java' },
 ];
 
 /** Group-level validator for the `languages` checkboxes group: at least one must be checked. */
@@ -62,6 +63,7 @@ export class QuestionForm {
     languages: this.fb.nonNullable.group({
       javascript: this.fb.nonNullable.control(false),
       python: this.fb.nonNullable.control(false),
+      java: this.fb.nonNullable.control(false),
     }),
     functionName: this.fb.nonNullable.control(''),
     testCases: this.fb.array<ReturnType<typeof this.newTestCase>>([]),

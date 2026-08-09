@@ -1,13 +1,16 @@
-<mat-button-toggle-group
-  class="language-toggle"
-  [value]="selectedLanguage()"
-  (change)="selectLanguage($event.value)"
-  aria-label="Lenguaje"
->
-  @for (lang of allowedLanguages(); track lang) {
-    <mat-button-toggle [value]="lang">{{ languageLabel(lang) }}</mat-button-toggle>
-  }
-</mat-button-toggle-group>
+<mat-form-field class="language-select" subscriptSizing="dynamic">
+  <mat-label>Lenguaje</mat-label>
+  <mat-select
+    panelClass="language-select-panel"
+    [value]="selectedLanguage()"
+    (selectionChange)="selectLanguage($event.value)"
+    aria-label="Lenguaje"
+  >
+    @for (lang of allowedLanguages(); track lang) {
+      <mat-option [value]="lang">{{ languageLabel(lang) }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>
 
 <div class="editor-container" style="height: 300px">
   <ngx-monaco-editor
@@ -30,6 +33,6 @@
 
 @if (result(); as r) {
   @if (r.testResults) {
-    <app-test-results [testResults]="r.testResults" [showDetails]="false" />
+    <app-test-results [testResults]="r.testResults" />
   }
 }

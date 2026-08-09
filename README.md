@@ -1,4 +1,4 @@
-# CloudRank WEB UI
+# CodeRank WEB UI
 
 Frontend Angular para la plataforma de assessments (recruiter + candidate), consumiendo el backend Node/Express/Prisma en `http://localhost:3000/api` (Swagger vivo en `/api-docs`, se autodocumenta con el tráfico real).
 

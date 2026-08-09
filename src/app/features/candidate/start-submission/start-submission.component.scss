@@ -1,5 +1,4 @@
 :host {
-  position: fixed;
   inset: 0;
   display: flex;
   justify-content: center;
@@ -32,8 +31,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--mat-sys-primary-container, #d8e2ff);
-  color: var(--mat-sys-on-primary-container, #001a41);
+  // A light periwinkle (Material's default primary-container) stood out as a
+  // jarring light patch against the app's dark navy/green gradient — swapped
+  // for the same translucent-glass + green-accent treatment used elsewhere
+  // (see .type-icon in assessment-list.component.scss).
+  background: rgba(110, 231, 183, 0.16);
+  border: 1px solid rgba(110, 231, 183, 0.4);
+
+  // A global rule (styles.scss) forces every mat-icon's font-size to
+  // `inherit` !important (to stop the app-wide font-family override from
+  // breaking the ligature glyphs) — that also wipes out Material's own 24px
+  // default, so the glyph shrinks down to the ambient 14px body font-size
+  // and renders tiny/blurry inside this 48px box. Re-declaring the size
+  // here with !important is the established fix for it (same pattern as
+  // .type-icon mat-icon below).
+  mat-icon {
+    color: #6ee7b7 !important;
+    width: 26px !important;
+    height: 26px !important;
+    font-size: 26px !important;
+    line-height: 26px !important;
+  }
 }
 
 h1 {
@@ -62,8 +80,12 @@ form {
     gap: 4px;
   };
   input {
-    color: #064e3b !important;
+    color: #fdfffe !important;
   }
+}
+
+mat-label, .mat-mdc-form-field-label, .mdc-floating-label {
+  color: #fdfffe !important;
 }
 
 mat-form-field {

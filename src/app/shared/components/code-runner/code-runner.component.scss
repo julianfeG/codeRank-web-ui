@@ -2,35 +2,69 @@
   display: block;
 }
 
-.language-toggle {
+.language-select {
   margin-bottom: 8px;
-  display: inline-flex;
-  gap: 4px;
+  display: inline-block;
+  min-width: 180px;
 
-  ::ng-deep .mat-button-toggle {
+  // Closed trigger: the global styles.scss forces light text everywhere, which
+  // reads fine against Material's default light field background — but this app
+  // is dark-themed (see body's navy/green gradient), so without an explicit dark
+  // background here the field looks like a near-blank box. Match the editor's
+  // vs-dark surface instead.
+  ::ng-deep .mat-mdc-text-field-wrapper {
+    background-color: #0f172a !important;
     border-radius: 8px;
-    overflow: hidden;
-
-    .mat-pseudo-checkbox {
-      --mat-pseudo-checkbox-minimal-selected-checkmark-color: #064e3b;
-    }
   }
 
-  ::ng-deep .mat-button-toggle-button {
-    background-color: #2cbe4c !important;
-    color: #064e3b !important;
-    font-weight: 700 !important;
-    border-radius: 8px !important;
+  ::ng-deep .mdc-notched-outline__leading,
+  ::ng-deep .mdc-notched-outline__notch,
+  ::ng-deep .mdc-notched-outline__trailing {
+    border-color: #2cbe4c !important;
   }
 
-  ::ng-deep .mat-button-toggle-label-content {
-    padding: 4px 12px !important;
-    line-height: 1.4 !important;
+  ::ng-deep .mdc-floating-label {
+    color: #9ca3af !important;
   }
 
-  ::ng-deep .mat-button-toggle-checked .mat-button-toggle-button {
-    background-color: #28b34b !important;
-    padding-left: 34px !important;
+  // The selected value text lives on the *inner* .mat-mdc-select-min-line span
+  // (see Angular Material's select template), not the outer
+  // .mat-mdc-select-value-text it sits in. The global styles.scss forces every
+  // plain <span> to a dark green (#064e3b !important) meant for light
+  // backgrounds — since that rule targets the inner span directly rather than
+  // just an ancestor, it beat a color set only on the outer span here, leaving
+  // "Python" nearly invisible against this dark field. Target the inner span
+  // explicitly (same color as the "Lenguaje" label above, per design) so this
+  // rule's specificity wins.
+  ::ng-deep .mat-mdc-select-value-text,
+  ::ng-deep .mat-mdc-select-value-text .mat-mdc-select-min-line,
+  ::ng-deep .mat-mdc-select-arrow {
+    color: #9ca3af !important;
+  }
+}
+
+// The options panel is rendered by the CDK overlay directly under <body>, outside
+// this component's DOM — a `:host`-scoped ::ng-deep can't reach it, so this stays
+// unscoped and is targeted only via the panelClass set on the <mat-select>.
+::ng-deep .language-select-panel {
+  background-color: #0f172a !important;
+
+  .mat-mdc-option .mdc-list-item__primary-text,
+  .mat-mdc-option span {
+    color: #e6e7eb !important;
+  }
+
+  .mat-mdc-option:hover:not(.mdc-option-disabled),
+  .mat-mdc-option.mat-mdc-option-active {
+    background-color: rgba(44, 190, 76, 0.18) !important;
+  }
+
+  .mat-mdc-option.mdc-list-item--selected {
+    background-color: rgba(44, 190, 76, 0.3) !important;
+  }
+
+  .mat-pseudo-checkbox {
+    color: #2cbe4c !important;
   }
 }
 

@@ -2,8 +2,9 @@ import { Component, computed, effect, inject, input, signal } from '@angular/cor
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormsModule } from '@angular/forms';
 import { MatButtonModule } from '@angular/material/button';
-import { MatButtonToggleModule } from '@angular/material/button-toggle';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatSelectModule } from '@angular/material/select';
 import { EditorComponent } from 'ngx-monaco-editor-v2';
 import { Subject, debounceTime, switchMap } from 'rxjs';
 import { environment } from '../../../../environments/environment';
@@ -12,7 +13,7 @@ import { SubmissionAnswer } from '../../models';
 import { TestResultsView } from '../test-results/test-results.component';
 
 /** Display labels for the languages the backend currently supports — falls back to the raw code for anything unlisted. */
-const LANGUAGE_LABELS: Record<string, string> = { javascript: 'JavaScript', python: 'Python' };
+const LANGUAGE_LABELS: Record<string, string> = { javascript: 'JavaScript', python: 'Python', java: 'Java' };
 
 /**
  * Language picker + Monaco editor + Ejecutar, reused in resolve-assessment.
@@ -23,7 +24,7 @@ const LANGUAGE_LABELS: Record<string, string> = { javascript: 'JavaScript', pyth
  */
 @Component({
   selector: 'app-code-runner',
-  imports: [FormsModule, EditorComponent, MatButtonModule, MatButtonToggleModule, MatProgressSpinnerModule, TestResultsView],
+  imports: [FormsModule, EditorComponent, MatButtonModule, MatFormFieldModule, MatSelectModule, MatProgressSpinnerModule, TestResultsView],
   templateUrl: './code-runner.component.html',
   styleUrl: './code-runner.component.scss',
 })

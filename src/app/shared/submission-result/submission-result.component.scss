@@ -1,5 +1,138 @@
+// margin (not !important): the candidate flow renders this component nested
+// inside DesktopGate's own router-outlet, so it's never a direct child of
+// app-root and never gets styles.scss's global `app-root > * { margin: 24px
+// 52px !important }` — content sat flush against the viewport edges there.
+// On the recruiter route this component IS that direct child, so the global
+// !important rule already wins over this plain one and nothing doubles up.
 :host {
   display: block;
+  margin: 24px 52px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 600px) {
+  :host {
+    margin: 12px 16px;
+  }
+}
+
+// Plain header instead of a mat-card: boxed the same way as each question
+// below, the candidate's name/email/score read as if they were "Pregunta 0"
+// rather than the page's own identity — this spans the full width instead.
+.result-header {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 24px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+
+  h1 {
+    margin: 0 0 4px;
+    font-size: 1.6rem;
+  }
+
+  // !important: the global styles.scss forces every plain <p>/<span> to the
+  // app's light gray text color (or, for spans specifically, a dark green
+  // meant for light backgrounds) — same override needed even though the
+  // value now matches the name/score above rather than dimming it.
+  .email {
+    margin: 0;
+    color: var(--app-text-color, #e6e7eb) !important;
+  }
+}
+
+.score-summary {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  text-align: right;
+
+  .score-percent {
+    color: var(--app-text-color, #e6e7eb) !important;
+    font-size: 2.2rem;
+    font-weight: 700;
+    line-height: 1;
+  }
+
+  .score-fraction {
+    color: var(--app-text-color, #e6e7eb) !important;
+    font-size: 0.85rem;
+  }
+}
+
+// Candidate-only pass/fail banner. h2/p aren't given an explicit color here:
+// the global styles.scss already forces both to the app's light text color
+// with !important, so they render correctly without fighting it.
+.result-banner {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 18px 20px;
+  border-radius: 12px;
+  margin-bottom: 20px;
+  overflow: hidden;
+
+  h2 {
+    margin: 0 0 4px;
+    font-size: 1.15rem;
+  }
+
+  p {
+    margin: 0;
+    line-height: 1.4;
+  }
+
+  // mat-icon is globally forced to `color: inherit !important`, so it picks
+  // up whichever color .success/.rejected sets below.
+  mat-icon {
+    flex-shrink: 0;
+    font-size: 28px;
+    width: 28px;
+    height: 28px;
+    margin-top: 2px;
+  }
+
+  &.success {
+    background: rgba(22, 163, 74, 0.18);
+    border: 1px solid rgba(22, 163, 74, 0.4);
+    color: #16a34a;
+  }
+
+  &.rejected {
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #9ca3af;
+  }
+}
+
+.confetti {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.confetti-piece {
+  position: absolute;
+  top: -12px;
+  width: 8px;
+  height: 14px;
+  opacity: 0.9;
+  animation-name: confetti-fall;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+  animation-iteration-count: infinite;
+}
+
+@keyframes confetti-fall {
+  to {
+    transform: translateY(220px) rotate(540deg);
+    opacity: 0;
+  }
 }
 
 mat-card {
@@ -15,26 +148,98 @@ mat-card {
   }
 }
 
-mat-chip.score-chip {
-  --mdc-chip-label-text-color: #ffffff;
+// Solid, saturated fills instead of the previous pale tints — and the
+// *correct* CSS variable names: Angular Material 21 renamed these from
+// --mdc-chip-* to --mat-chip-*, so the old names silently did nothing and
+// the chip rendered with no background at all. The global styles.scss also
+// forces every chip's inner <span> to a dark green (#064e3b !important),
+// hence the ::ng-deep override for the label text too.
+mat-chip.correct {
+  --mat-chip-elevated-container-color: #16a34a;
+  --mat-chip-label-text-color: #ffffff;
 
   ::ng-deep span {
     color: #ffffff !important;
   }
 }
 
-mat-chip.correct {
-  --mdc-chip-elevated-container-color: #e3f3e5;
-  --mdc-chip-label-text-color: #24ff57;
-}
-
 mat-chip.incorrect {
-  --mdc-chip-elevated-container-color: #fbe4e3;
-  --mdc-chip-label-text-color: #b3261e;
+  --mat-chip-elevated-container-color: #dc2626;
+  --mat-chip-label-text-color: #ffffff;
+
+  ::ng-deep span {
+    color: #ffffff !important;
+  }
 }
 
 .pending-note {
   margin: 0;
   color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
   font-size: 0.9rem;
+}
+
+.statement {
+  margin: 0 0 14px;
+  padding: 10px 14px;
+  border-left: 3px solid #2cbe4c;
+  background: rgba(0, 0, 0, 0.18);
+  border-radius: 0 6px 6px 0;
+  line-height: 1.4;
+}
+
+.options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.option-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--app-text-color, #e6e7eb);
+
+  // mat-icon is globally forced to `color: inherit !important` (see
+  // styles.scss), so it always picks up whatever color this row sets below —
+  // no separate rule needed here.
+  mat-icon {
+    flex-shrink: 0;
+  }
+
+  // The chosen option (right or wrong) and the actually-correct one both get
+  // a colored background — same passed/failed palette app-test-results
+  // already uses elsewhere on this page — so a candidate can see at a glance
+  // what they picked vs. what they should have.
+  &.selected:not(.correct-option) {
+    background: #fbe4e3;
+    color: #b3261e;
+  }
+
+  &.correct-option {
+    background: #e3f3e5;
+    color: #1e7e34;
+  }
+}
+
+.option-text {
+  flex: 1 1 auto;
+  // !important: the global styles.scss forces every plain <span> to a dark
+  // green meant for light backgrounds, which would otherwise fight the
+  // state-based color set on .option-row above.
+  color: inherit !important;
+}
+
+.tag {
+  flex-shrink: 0;
+  padding: 2px 8px;
+  border-radius: 999px;
+  background: rgba(0, 0, 0, 0.25);
+  color: inherit !important;
+  font-size: 0.7rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
 }

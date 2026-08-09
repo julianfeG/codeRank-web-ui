@@ -31,7 +31,7 @@ export interface Question {
   functionName: string | null;
   /**
    * Present (non-null) when type === 'CODE'. Keyed by language, e.g.
-   * `{ javascript: "...", python: "..." }`. Generated server-side from
+   * `{ javascript: "...", python: "...", java: "..." }`. Generated server-side from
    * functionName + allowedLanguages — never sent in CreateQuestionPayload.
    */
   starterCodeTemplates: Record<string, string> | null;

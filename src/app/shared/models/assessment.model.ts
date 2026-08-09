@@ -23,7 +23,7 @@ export interface EmbeddedQuestion {
   allowedLanguages: string[];
   /**
    * Present (non-null) when type === 'CODE'. Keyed by language, e.g.
-   * `{ javascript: "...", python: "..." }`.
+   * `{ javascript: "...", python: "...", java: "..." }`.
    *
    * Deliberately trimmed by the backend: `functionName` and `testCases` are
    * grading internals and are never exposed to the candidate on this endpoint.

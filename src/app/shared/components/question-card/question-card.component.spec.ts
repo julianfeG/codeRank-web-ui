@@ -9,8 +9,10 @@ const testQuestion: Question = {
   type: 'MULTIPLE_CHOICE',
   statement: 'Sample question?',
   difficulty: 'EASY',
-  starterCode: null,
-  expectedOutput: null,
+  allowedLanguages: [],
+  functionName: null,
+  starterCodeTemplates: null,
+  testCases: null,
   options: [],
 };
 

@@ -28,10 +28,18 @@
   background: #fdf0dc;
   color: #b3690b;
 
+  // A global rule (styles.scss) forces every mat-icon's font-size to
+  // `inherit` !important, which wipes out the 32px set here and shrinks the
+  // glyph down to the ambient body font-size — it renders tiny/blurry
+  // instead of filling this 64px circle. Re-declaring with !important
+  // matches the fix used for other icons in the app (e.g. .type-icon in
+  // assessment-list.component.scss).
   mat-icon {
-    font-size: 32px;
-    width: 32px;
-    height: 32px;
+    color: #b3690b !important;
+    font-size: 32px !important;
+    width: 32px !important;
+    height: 32px !important;
+    line-height: 32px !important;
   }
 }
 
@@ -58,11 +66,21 @@ p {
   font-size: 0.82rem;
   line-height: 1.4;
   color: var(--mat-sys-on-surface-variant, rgba(0, 0, 0, 0.6));
+  box-sizing: border-box;
 
   mat-icon {
     flex-shrink: 0;
-    font-size: 20px;
-    width: 20px;
-    height: 20px;
+    font-size: 20px !important;
+    width: 20px !important;
+    height: 20px !important;
+    line-height: 20px !important;
+    color: inherit !important;
+  }
+
+  // Flex items default to min-width: auto, which floors this span's shrink
+  // at its unwrapped content width — on narrow phones that pushed the whole
+  // box past the viewport edge instead of letting the text wrap normally.
+  span {
+    min-width: 0;
   }
 }
