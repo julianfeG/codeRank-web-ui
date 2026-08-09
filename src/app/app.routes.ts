@@ -29,6 +29,13 @@ export const routes: Routes = [
           ),
       },
       {
+        path: 'questions',
+        loadComponent: () =>
+          import('./features/recruiter/question-bank/question-bank.component').then(
+            (m) => m.QuestionBank,
+          ),
+      },
+      {
         path: 'assessments/:assessmentId/submissions',
         pathMatch: 'full',
         loadComponent: () =>

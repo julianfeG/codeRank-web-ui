@@ -35,9 +35,77 @@
   color: #2cbe4c !important;
 }
 
+// margin-right: auto pushes .role-tag (a sibling, still the last flex item)
+// back to the far right — .app-header's own justify-content: space-between
+// only balances *two* items, so a third one here would otherwise land
+// between brand and role-tag instead of pinned next to brand.
+.nav-links {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-right: auto;
+  margin-left: 40px;
+
+  a {
+    font-family: var(--app-font-family);
+    font-size: 14px;
+    font-weight: 600;
+    // !important: styles.scss's global `a, a:link, a:visited` rule paints
+    // every plain link with a grey pill background — meant for inline text
+    // links, not these nav tabs, where it showed up as a stray highlight
+    // box behind "Assessments"/"Preguntas".
+    background-color: transparent !important;
+    color: var(--app-text-color, #e6e7eb) !important;
+    text-decoration: none;
+    opacity: 0.75;
+    padding-bottom: 2px;
+    border-bottom: 2px solid transparent;
+    transition: opacity 0.15s ease, border-color 0.15s ease;
+
+    &:hover {
+      opacity: 1;
+    }
+
+    &.active {
+      opacity: 1;
+      color: #2cbe4c !important;
+      border-bottom-color: #2cbe4c;
+    }
+  }
+}
+
+.role-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.logout-button {
+  background-color: rgba(248, 113, 113, 0.14) !important;
+  border: 1.5px solid rgba(248, 113, 113, 0.4) !important;
+  color: #fca5a5 !important;
+  box-shadow: none !important;
+
+  // Material wraps the button's text in .mdc-button__label — the global
+  // `span { color: ... !important }` rule targets that inner span directly
+  // (not just the button), so it needs its own override to actually show red.
+  ::ng-deep .mdc-button__label,
+  .logout-label,
+  mat-icon {
+    color: #fca5a5 !important;
+  }
+
+  &:hover {
+    background-color: rgba(248, 113, 113, 0.22) !important;
+    border-color: rgba(248, 113, 113, 0.6) !important;
+  }
+}
+
 @media (max-width: 600px) {
   .app-header {
     padding: 12px 16px;
+    flex-wrap: wrap;
+    row-gap: 8px;
   }
 
   .brand {
@@ -46,5 +114,31 @@
 
   .role-tag {
     font-size: 12px;
+  }
+
+  .nav-links {
+    gap: 12px;
+    margin-left: 16px;
+
+    a {
+      font-size: 12px;
+    }
+  }
+
+  .role-actions {
+    gap: 10px;
+  }
+
+  .logout-button {
+    min-width: 0 !important;
+    padding: 0 10px !important;
+
+    mat-icon {
+      margin: 0 !important;
+    }
+
+    .logout-label {
+      display: none;
+    }
   }
 }

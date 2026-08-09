@@ -12,10 +12,6 @@
       <p class="subtitle">{{ assessments().length }} assessments creados</p>
     </div>
     <div class="header-actions">
-      <button mat-button class="logout-button" (click)="authService.logout()">
-        <mat-icon>logout</mat-icon>
-        Cerrar sesión
-      </button>
       <ng-container [ngTemplateOutlet]="createButton" />
     </div>
   </header>

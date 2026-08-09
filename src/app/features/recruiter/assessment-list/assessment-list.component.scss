@@ -73,26 +73,6 @@ a.create-button {
   }
 }
 
-.logout-button {
-  background-color: rgba(248, 113, 113, 0.14) !important;
-  border: 1.5px solid rgba(248, 113, 113, 0.4) !important;
-  color: #fca5a5 !important;
-  box-shadow: none !important;
-
-  // Material wraps the button's text in .mdc-button__label — the global
-  // `span { color: ... !important }` rule targets that inner span directly
-  // (not just the button), so it needs its own override to actually show red.
-  ::ng-deep .mdc-button__label,
-  mat-icon {
-    color: #fca5a5 !important;
-  }
-
-  &:hover {
-    background-color: rgba(248, 113, 113, 0.22) !important;
-    border-color: rgba(248, 113, 113, 0.6) !important;
-  }
-}
-
 .state-container {
   display: flex;
   align-items: center;

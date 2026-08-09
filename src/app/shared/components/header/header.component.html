@@ -1,6 +1,19 @@
 <header class="app-header">
   <span class="brand">CodeRank</span>
+
   @if (isRecruiter()) {
-    <span class="role-tag">Recruiter</span>
+    <nav class="nav-links">
+      <a routerLink="/recruiter" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }">
+        Assessments
+      </a>
+      <a routerLink="/recruiter/questions" routerLinkActive="active">Preguntas</a>
+    </nav>
+    <div class="role-actions">
+      <span class="role-tag">Recruiter</span>
+      <button mat-button class="logout-button" (click)="authService.logout()">
+        <mat-icon>logout</mat-icon>
+        <span class="logout-label">Cerrar sesión</span>
+      </button>
+    </div>
   }
 </header>

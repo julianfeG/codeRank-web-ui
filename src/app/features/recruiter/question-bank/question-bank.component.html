@@ -1,0 +1,129 @@
+<div class="page">
+  <header class="page-header">
+    <div class="heading">
+      <h1>Banco de preguntas</h1>
+      <p class="subtitle">{{ questions().length }} preguntas</p>
+    </div>
+    <button mat-raised-button class="create-button" (click)="openNewQuestionDialog()">
+      <mat-icon>add</mat-icon>
+      Nueva pregunta
+    </button>
+  </header>
+
+  <div class="filters">
+    <mat-form-field class="filter-field" subscriptSizing="dynamic">
+      <mat-label>Categoría</mat-label>
+      <mat-select [value]="categoryFilter()" (selectionChange)="onCategoryFilterChange($event.value)">
+        <mat-option value="">Todas</mat-option>
+        @for (cat of categories; track cat) {
+          <mat-option [value]="cat">{{ cat }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field class="filter-field" subscriptSizing="dynamic">
+      <mat-label>Dificultad</mat-label>
+      <mat-select [value]="difficultyFilter()" (selectionChange)="onDifficultyFilterChange($event.value)">
+        <mat-option value="">Todas</mat-option>
+        @for (level of difficulties; track level) {
+          <mat-option [value]="level">{{ level }}</mat-option>
+        }
+      </mat-select>
+    </mat-form-field>
+  </div>
+
+  @if (loading()) {
+    <div class="state-container">
+      <mat-spinner diameter="40" />
+    </div>
+  } @else if (isEmpty()) {
+    <div class="state-container empty-state">
+      <mat-icon class="empty-icon">quiz</mat-icon>
+      <p>No hay preguntas que coincidan con estos filtros</p>
+      <button mat-raised-button class="create-button" (click)="openNewQuestionDialog()">
+        <mat-icon>add</mat-icon>
+        Nueva pregunta
+      </button>
+    </div>
+  } @else {
+    <div class="question-list">
+      @for (question of questions(); track question.id; let last = $last) {
+        <div class="question-row">
+          <button
+            mat-icon-button
+            class="expand-toggle"
+            [class.expanded]="expandedId() === question.id"
+            [attr.aria-expanded]="expandedId() === question.id"
+            [attr.aria-label]="expandedId() === question.id ? 'Colapsar pregunta' : 'Expandir pregunta'"
+            (click)="toggleExpand(question)"
+          >
+            <mat-icon>expand_more</mat-icon>
+          </button>
+
+          <div class="row-main" (click)="toggleExpand(question)">
+            <div class="type-icon">
+              <mat-icon>{{ question.type === 'CODE' ? 'code' : 'checklist' }}</mat-icon>
+            </div>
+            <span class="category">{{ question.category }}</span>
+            <app-difficulty-badge [difficulty]="question.difficulty" />
+            <span class="statement">{{ question.statement }}</span>
+          </div>
+        </div>
+
+        @if (expandedId() === question.id) {
+          <div class="detail-panel">
+            <p class="detail-statement">{{ question.statement }}</p>
+
+            @if (question.type === 'MULTIPLE_CHOICE') {
+              <div class="options-list">
+                @for (option of question.options; track option.id) {
+                  <div class="option-row" [class.correct]="option.isCorrect">
+                    <mat-icon>{{ option.isCorrect ? 'check_circle' : 'radio_button_unchecked' }}</mat-icon>
+                    <span>{{ option.text }}</span>
+                  </div>
+                } @empty {
+                  <p class="detail-empty">Esta pregunta no tiene opciones.</p>
+                }
+              </div>
+            } @else {
+              <div class="code-detail">
+                <div class="code-meta">
+                  <span class="meta-label">Función:</span>
+                  <code>{{ question.functionName }}</code>
+                </div>
+                <div class="code-meta">
+                  <span class="meta-label">Lenguajes:</span>
+                  @for (lang of question.allowedLanguages; track lang) {
+                    <span class="language-chip">{{ languageLabel(lang) }}</span>
+                  }
+                </div>
+
+                <p class="meta-label">Casos de prueba</p>
+                <div class="test-cases-list">
+                  @for (testCase of question.testCases; track $index) {
+                    <div class="test-case-row">
+                      <div>
+                        <h4>Input</h4>
+                        <pre>{{ formatValue(testCase.input) }}</pre>
+                      </div>
+                      <div>
+                        <h4>Output esperado</h4>
+                        <pre>{{ formatValue(testCase.output) }}</pre>
+                      </div>
+                    </div>
+                  } @empty {
+                    <p class="detail-empty">Esta pregunta no tiene casos de prueba.</p>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+
+        @if (!last) {
+          <mat-divider />
+        }
+      }
+    </div>
+  }
+</div>

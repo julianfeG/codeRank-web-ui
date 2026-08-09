@@ -8,7 +8,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { Router, RouterLink } from '@angular/router';
 import { AssessmentService } from '../../../core/services/assessment.service';
-import { AuthService } from '../../../core/services/auth.service';
 import { DifficultyBadge } from '../../../shared/components/difficulty-badge/difficulty-badge.component';
 import { AssessmentQuestionRef, AssessmentSummary } from '../../../shared/models';
 import { DeleteAssessmentDialog } from './delete-assessment-dialog/delete-assessment-dialog.component';
@@ -34,7 +33,6 @@ export class AssessmentList {
   private readonly snackBar = inject(MatSnackBar);
   private readonly router = inject(Router);
   private readonly dialog = inject(MatDialog);
-  readonly authService = inject(AuthService);
 
   readonly assessments = signal<AssessmentSummary[]>([]);
   readonly loading = signal(false);
