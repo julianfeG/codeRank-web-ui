@@ -1,5 +1,6 @@
-import { Component, OnDestroy, signal } from '@angular/core';
+import { Component, OnDestroy, inject, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { MobileBlocked } from '../../../shared/components/mobile-blocked/mobile-blocked.component';
 
 /** The candidate flow needs a real code editor — below this width it's blocked outright. */
@@ -21,6 +22,7 @@ const DESKTOP_MIN_WIDTH = 1024;
   styleUrl: './desktop-gate.component.scss',
 })
 export class DesktopGate implements OnDestroy {
+  private readonly analytics = inject(AnalyticsService);
   private readonly mediaQuery = window.matchMedia(`(min-width: ${DESKTOP_MIN_WIDTH}px)`);
   private readonly onChange = (event: MediaQueryListEvent): void => this.isDesktop.set(event.matches);
 
@@ -28,6 +30,9 @@ export class DesktopGate implements OnDestroy {
 
   constructor() {
     this.mediaQuery.addEventListener('change', this.onChange);
+    // Entry point for the whole candidate route tree — GA4 loads here and
+    // nowhere else, so recruiter/login screens never pull in the script.
+    this.analytics.init();
   }
 
   ngOnDestroy(): void {

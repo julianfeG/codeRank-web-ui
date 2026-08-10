@@ -3,6 +3,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatRadioModule } from '@angular/material/radio';
 import { Router } from '@angular/router';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AssessmentService } from '../../../core/services/assessment.service';
 import { SubmissionService } from '../../../core/services/submission.service';
 import { CodeRunner } from '../../../shared/components/code-runner/code-runner.component';
@@ -30,6 +31,7 @@ import { AssessmentDetail, SubmissionAnswer } from '../../../shared/models';
 export class ResolveAssessment {
   private readonly assessmentService = inject(AssessmentService);
   private readonly submissionService = inject(SubmissionService);
+  private readonly analytics = inject(AnalyticsService);
   private readonly router = inject(Router);
 
   /** Bound automatically from the :submissionId route param (withComponentInputBinding). */
@@ -109,6 +111,7 @@ export class ResolveAssessment {
   goToPrevious(): void {
     this.persistCurrentMcAnswer();
     this.currentIndex.update((i) => Math.max(0, i - 1));
+    this.trackProgress('previous');
   }
 
   /** "Siguiente" on any question but the last one; "Finalizar" (opens the submit confirmation) on the last. */
@@ -118,7 +121,18 @@ export class ResolveAssessment {
       this.submitAssessment();
     } else {
       this.currentIndex.update((i) => i + 1);
+      this.trackProgress('next');
     }
+  }
+
+  /** "Desarrollo": one event per question-to-question move, so the funnel between assessment_started and assessment_submitted shows where candidates slow down or abandon. */
+  private trackProgress(direction: 'next' | 'previous'): void {
+    this.analytics.trackEvent('assessment_progress', {
+      submission_id: this.submissionId(),
+      direction,
+      question_index: this.currentIndex(),
+      question_count: this.orderedQuestions().length,
+    });
   }
 
   /**
@@ -151,6 +165,11 @@ export class ResolveAssessment {
     this.submissionService.submit(this.submissionId()).subscribe({
       next: () => {
         this.submitting.set(false);
+        // "Envío": the assessment was successfully closed out.
+        this.analytics.trackEvent('assessment_submitted', {
+          submission_id: this.submissionId(),
+          question_count: this.orderedQuestions().length,
+        });
         this.router.navigate(['/candidate/submissions', this.submissionId(), 'results']);
       },
       error: () => this.submitting.set(false),

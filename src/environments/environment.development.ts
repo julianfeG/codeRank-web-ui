@@ -5,4 +5,6 @@ export const environment = {
   codeAutoSaveIdleMs: 3000,
   /** Minimum score percentage (0-100) for a submission to count as "passed" on the recruiter's candidates table. */
   passingScorePercent: 70,
+  /** Empty on purpose — AnalyticsService no-ops without an ID, so local dev traffic never reaches GA4. */
+  gaMeasurementId: '',
 };

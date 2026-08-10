@@ -8,6 +8,7 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { Router } from '@angular/router';
+import { AnalyticsService } from '../../../core/services/analytics.service';
 import { AssessmentService } from '../../../core/services/assessment.service';
 import { SubmissionService } from '../../../core/services/submission.service';
 import { AssessmentDetail } from '../../../shared/models';
@@ -34,6 +35,7 @@ export class StartSubmission {
   private readonly fb = inject(FormBuilder);
   private readonly assessmentService = inject(AssessmentService);
   private readonly submissionService = inject(SubmissionService);
+  private readonly analytics = inject(AnalyticsService);
   private readonly router = inject(Router);
 
   /** Bound automatically from the :assessmentId route param (withComponentInputBinding). */
@@ -65,6 +67,14 @@ export class StartSubmission {
         next: (assessment) => {
           this.assessment.set(assessment);
           this.loading.set(false);
+          // "Inicio": the candidate landed on the entry screen for this
+          // assessment. Paired with assessment_started below, the gap
+          // between the two measures drop-off before the candidate even
+          // submits their name/email.
+          this.analytics.trackEvent('assessment_start_view', {
+            assessment_id: id,
+            question_count: this.questionCount(),
+          });
         },
         error: () => this.loading.set(false),
       });
@@ -82,6 +92,13 @@ export class StartSubmission {
       .subscribe({
         next: (submission) => {
           this.saving.set(false);
+          // "Inicio": the submission was actually created — the candidate is
+          // now committed to the assessment, not just browsing the landing page.
+          this.analytics.trackEvent('assessment_started', {
+            assessment_id: this.assessmentId(),
+            submission_id: submission.id,
+            question_count: this.questionCount(),
+          });
           this.router.navigate(['/candidate/submissions', submission.id, 'resolve']);
         },
         error: () => this.saving.set(false),

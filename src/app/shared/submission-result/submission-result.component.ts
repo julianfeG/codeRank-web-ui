@@ -4,6 +4,7 @@ import { MatChipsModule } from '@angular/material/chips';
 import { MatIconModule } from '@angular/material/icon';
 import { Router } from '@angular/router';
 import { environment } from '../../../environments/environment';
+import { AnalyticsService } from '../../core/services/analytics.service';
 import { AssessmentService } from '../../core/services/assessment.service';
 import { SubmissionService } from '../../core/services/submission.service';
 import { EmbeddedQuestion, EmbeddedQuestionOption, SubmissionAnswer, SubmissionResult } from '../models';
@@ -45,6 +46,7 @@ const CONFETTI_COLORS = ['#2cbe4c', '#facc15', '#38bdf8', '#f472b6', '#fb923c'];
 export class SubmissionResultView {
   private readonly submissionService = inject(SubmissionService);
   private readonly assessmentService = inject(AssessmentService);
+  private readonly analytics = inject(AnalyticsService);
   private readonly router = inject(Router);
 
   /** Bound automatically from the :submissionId route param (withComponentInputBinding). */
@@ -95,6 +97,15 @@ export class SubmissionResultView {
       this.submissionService.getSubmission(id).subscribe({
         next: (result) => {
           this.result.set(result);
+          if (this.isCandidateView) {
+            // "Envío" (closing event): the candidate is looking at their own
+            // outcome. Rounds out the funnel started by assessment_start_view.
+            this.analytics.trackEvent('assessment_result_viewed', {
+              submission_id: id,
+              passed: this.passed(result),
+              score_percent: this.passPercent(result),
+            });
+          }
           this.assessmentService.getAssessment(result.submission.assessmentId).subscribe({
             next: (assessment) => {
               this.questionsById.set(

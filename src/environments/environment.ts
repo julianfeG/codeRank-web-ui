@@ -15,4 +15,8 @@ export const environment = {
   codeAutoSaveIdleMs: 3000,
   /** Minimum score percentage (0-100) for a submission to count as "passed" on the recruiter's candidates table. */
   passingScorePercent: 70,
+  // GA4 property scoped to the candidate flow only — loaded by AnalyticsService.init(),
+  // called from DesktopGate (see core/services/analytics.service.ts). Empty in
+  // environment.development.ts on purpose, so local runs never report to it.
+  gaMeasurementId: 'G-3LMRS3GD47',
 };
